@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"go-admin/global"
 	"go-admin/models"
@@ -20,7 +19,7 @@ func SensitiveWordsList(c *gin.Context) {
 		pageSize = 20
 	}
 	var sensitiveWords []models.SensitiveWord
-	fmt.Println(pageNum, pageSize)
+
 	db := global.DB.Model(&models.SensitiveWord{}).Order("created_at desc")
 	r, perr := models.Paginate(db, pageNum, pageSize, &sensitiveWords)
 	if perr != nil {

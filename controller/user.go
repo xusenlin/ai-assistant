@@ -5,8 +5,8 @@ import (
 	"go-admin/global"
 	"go-admin/models"
 	"go-admin/service/serviceUser"
-	"gorm.io/gorm"
 	"net/http"
+	"strconv"
 )
 
 func UserRegister(c *gin.Context) {
@@ -84,54 +84,54 @@ func UserLogin(c *gin.Context) {
 
 }
 
-func UserFindAll(c *gin.Context) {
-
-	var users []models.User
-	keyword := c.Query("name")
-
-	query := global.DB.Order("created_at asc")
-
-	if keyword != "" {
-		query = query.Where("username LIKE ?", "%"+keyword+"%")
+func UsersFind(c *gin.Context) {
+	pageNum, err := strconv.Atoi(c.Query("pageNum"))
+	if err != nil {
+		pageNum = 1
+	}
+	pageSize, err2 := strconv.Atoi(c.Query("pageSize"))
+	if err2 != nil {
+		pageSize = 20
 	}
 
-	if query.Find(&users).Error != nil {
+	keyword := c.Query("name")
+
+	db := global.DB.Model(&models.User{}).Order("created_at asc")
+
+	if keyword != "" {
+		db = db.Where("username LIKE ?", "%"+keyword+"%")
+	}
+	var users []models.User
+	r, perr := models.Paginate(db, pageNum, pageSize, &users)
+
+	if perr != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"Status": false,
-			"Data":   global.DB.Error.Error(),
-			"Msg":    "Database query error",
+			"Data":   "",
+			"Msg":    perr.Error(),
 		})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{
 		"Status": true,
-		"Data":   users,
-		"Msg":    "search successful",
+		"Data": models.UserPaginate{
+			PageInfo: *r,
+			List:     users,
+		},
+		"Msg": "success",
 	})
 }
 
 func UserDestroy(c *gin.Context) {
-
 	id := c.Query("id")
-	var user models.User
 
-	if global.DB.
-		Where("id = ? AND username = ?", id, models.SuperAdministrator).
-		First(&models.User{}).Error != gorm.ErrRecordNotFound {
+	err := new(models.User).Destroy(id)
+
+	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"Status": false,
 			"Data":   "",
-			"Msg":    "Super administrator cannot be deleted",
-		})
-		return
-	}
-
-	if global.DB.Where("id = ?", id).Delete(&user).Error != nil {
-		c.JSON(http.StatusOK, gin.H{
-			"Status": false,
-			"Data":   "",
-			"Msg":    global.DB.Error.Error(),
+			"Msg":    err.Error(),
 		})
 		return
 	}
@@ -139,7 +139,7 @@ func UserDestroy(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"Status": true,
 		"Data":   id,
-		"Msg":    "successfully deleted",
+		"Msg":    "",
 	})
 
 }

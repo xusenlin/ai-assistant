@@ -39,7 +39,6 @@ export class Request {
                     config.transformRequest = toFormData
                 }
                 if (!config.closeLoading) {
-
                     loadingInstance = ElLoading.service({ fullscreen: true })
                 }
                 return config;

@@ -33,8 +33,9 @@ func InitRouter() *gin.Engine {
 	v1 := r.Group("/v1").Use(middlewares.AdminAuth())
 	{
 
-		////user
-		v1.GET("/users", controller.UserFindAll)
+		//user
+		v1.GET("/users/list", controller.UsersFind)
+		v1.GET("/user/destroy", controller.UserDestroy)
 		//v1.GET("/user/delete", middlewares.RoleSuperAdmin(), controller.UserDestroy)
 		//v1.GET("/user/role_edit", middlewares.RoleSuperAdmin(), controller.UserRoleEdit)
 

@@ -9,7 +9,7 @@ export const SensitiveWords: RouteRecordRaw = {
     {
       path: 'list',
       component: () => import('@/views/sensitiveWord/Index.vue'),
-      meta: {icon: 'Guide', title: "敏感词管理", hideMenu: true}
+      meta: {icon: 'Guide', title: "敏感词列表", hideMenu: true}
     }
   ]
 }

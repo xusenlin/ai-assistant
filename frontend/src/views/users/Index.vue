@@ -2,8 +2,7 @@
   <div class="box">
     <ActionBar @reset="resetParams" @refresh="refreshTable">
       <template #left>
-        <el-button type="primary" @click="addSensitiveWords()">添加</el-button>
-        <el-button type="success" @click="clickMigrate()">敏感词迁移</el-button>
+<!--        <el-button type="primary" @click="addSensitiveWords()">添加</el-button>-->
       </template>
       <template #right>
 <!--        <el-input v-model="searchParams.id" placeholder="请输入ID"  clearable />-->
@@ -11,28 +10,34 @@
     </ActionBar>
     <el-table :data="tableData" style="width: 100%" max-height="calc(100vh - 267px)">
       <el-table-column prop="ID" label="ID"/>
-      <el-table-column prop="Name" label="Name"/>
+      <el-table-column prop="Username" label="Username"/>
+      <el-table-column prop="IsAdmin" label="是否是管理员"/>
+      <el-table-column prop="TokenConsumed" label="共消耗Token数"/>
+      <el-table-column prop="RemainingDialogueCount" label="剩余对话次数"/>
       <el-table-column prop="CreatedAt" label="CreatedAt"/>
-      <el-table-column fixed="right"  label="操作">
+      <el-table-column fixed="right"  label="操作" width="260">
         <template #default="scope">
-          <el-button type="danger" @click.prevent="deleteRow(scope.row)">
+          <el-button v-if="scope.row.Username!=='Admin'" type="danger" @click.prevent="deleteRow(scope.row)">
             删除
+          </el-button>
+          <el-button  type="warning" @click.prevent="deleteRow(scope.row)">
+            重置密码
           </el-button>
         </template>
       </el-table-column>
     </el-table>
-    <Pagination ref="paginationRef" :params="searchParams" :reqFunc="sensitiveWordsList" @pageData="setTableData" />
+    <Pagination ref="paginationRef" :params="searchParams" :reqFunc="userList" @pageData="setTableData" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { sensitiveWordsList } from "@/api/sensitiveWords.ts"
+import { userList } from "@/api/user.ts"
 import usePagination from "@/compositionApi/pagination.ts"
 import useExtraAction from "./extraAction"
 
 
 const {searchParams, tableData, paginationRef, setTableData, refreshTable,resetParams} =  usePagination()
-const { deleteRow,clickMigrate,addSensitiveWords } = useExtraAction(refreshTable)
+const { deleteRow } = useExtraAction(refreshTable)
 
 
 

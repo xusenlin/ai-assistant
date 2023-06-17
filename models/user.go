@@ -38,6 +38,11 @@ type User struct {
 	Desc                   string `gorm:"type:varchar(500)"`
 }
 
+type UserPaginate struct {
+	PageInfo
+	List []User
+}
+
 func (u *User) Register() (err error) {
 
 	if global.DB.Where("username = ?", u.Username).First(&User{}).Error != gorm.ErrRecordNotFound {
@@ -71,4 +76,8 @@ func (u *User) Login() error {
 	u.Password = "***"
 
 	return nil
+}
+
+func (s *User) Destroy(id string) (err error) {
+	return global.DB.Where("id = ?", id).Delete(&s).Error
 }

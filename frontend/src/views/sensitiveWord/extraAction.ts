@@ -32,6 +32,7 @@ export default function (refreshTable: () => void) {
     }
     const clickMigrate = () => {
         migrate().then(() => {
+            refreshTable()
             ElMessage({
                 type: 'success',
                 message: '迁移成功',
