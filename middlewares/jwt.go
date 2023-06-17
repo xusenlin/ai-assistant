@@ -12,9 +12,9 @@ func AdminAuth() func(c *gin.Context) {
 		token := c.Request.Header.Get("Authorization")
 		if token == "" {
 			c.JSON(http.StatusOK, gin.H{
-				"status": false,
-				"data":   "",
-				"msg":    "请先登录系统",
+				"Status": false,
+				"Data":   "",
+				"Msg":    "请先登录系统",
 			})
 			c.Abort()
 			return
@@ -22,18 +22,18 @@ func AdminAuth() func(c *gin.Context) {
 		claims, err := serviceUser.ParseToken(token)
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
-				"status": false,
-				"data":   "",
-				"msg":    err.Error(),
+				"Status": false,
+				"Data":   "",
+				"Msg":    err.Error(),
 			})
 			c.Abort()
 			return
 		}
 		if claims.Status == models.StatusDisabled {
 			c.JSON(http.StatusOK, gin.H{
-				"status": false,
-				"data":   "",
-				"msg":    "You have been banned from logging in",
+				"Status": false,
+				"Data":   "",
+				"Msg":    "You have been banned from logging in",
 			})
 			c.Abort()
 			return
@@ -41,9 +41,9 @@ func AdminAuth() func(c *gin.Context) {
 
 		if !claims.IsAdmin {
 			c.JSON(http.StatusOK, gin.H{
-				"status": false,
-				"data":   "",
-				"msg":    "You are not an administrator, access is not allowed",
+				"Status": false,
+				"Data":   "",
+				"Msg":    "You are not an administrator, access is not allowed",
 			})
 			c.Abort()
 			return
@@ -58,9 +58,9 @@ func CustomerAuth() func(c *gin.Context) {
 		token := c.Request.Header.Get("Authorization")
 		if token == "" {
 			c.JSON(http.StatusOK, gin.H{
-				"status": false,
-				"data":   "",
-				"msg":    "请先登录系统",
+				"Status": false,
+				"Data":   "",
+				"Msg":    "请先登录系统",
 			})
 			c.Abort()
 			return
@@ -68,18 +68,18 @@ func CustomerAuth() func(c *gin.Context) {
 		claims, err := serviceUser.ParseToken(token)
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
-				"status": false,
-				"data":   "",
-				"msg":    err.Error(),
+				"Status": false,
+				"Data":   "",
+				"Msg":    err.Error(),
 			})
 			c.Abort()
 			return
 		}
 		if claims.Status == models.StatusDisabled {
 			c.JSON(http.StatusOK, gin.H{
-				"status": false,
-				"data":   "",
-				"msg":    "You have been banned from logging in",
+				"Status": false,
+				"Data":   "",
+				"Msg":    "You have been banned from logging in",
 			})
 			c.Abort()
 			return

@@ -1,8 +1,8 @@
 import {defineStore} from "pinia"
 import storage from "good-storage"
-import {storagePrefixKey} from "@/config/app"
+import {userInfoKey,tokenKey} from "@/config/app"
 
-const UIK = storagePrefixKey + "User"
+
 
 export type User = {
   "ID": number,
@@ -25,7 +25,7 @@ export interface UserStore {
 export const useUserStore = defineStore("user", {
   state: (): UserStore => {
     return {
-      info: storage.get(UIK),
+      info: storage.get(userInfoKey),
     }
   },
   getters: {
@@ -35,10 +35,11 @@ export const useUserStore = defineStore("user", {
   actions: {
     updateUserInfo(user: User) {
       this.info = user
-      storage.set(UIK, user)
+      storage.set(userInfoKey, user)
+      storage.set(tokenKey,user.Token)
     },
     loginOut(){
-      storage.remove(UIK)
+      storage.remove(userInfoKey)
       window.location.reload()
     }
   }
@@ -46,7 +47,7 @@ export const useUserStore = defineStore("user", {
 
 //下面这些函数是从本地读取，在pinia还没有创建的时候，例如路由钩子
 export const getUserInfo = (): User => {
-  return storage.get(UIK, {})
+  return storage.get(userInfoKey, {})
 }
 
 export const getUserInfoByKey = (k: keyof User): any => {

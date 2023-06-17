@@ -38,8 +38,12 @@ func InitRouter() *gin.Engine {
 		//v1.GET("/user/delete", middlewares.RoleSuperAdmin(), controller.UserDestroy)
 		//v1.GET("/user/role_edit", middlewares.RoleSuperAdmin(), controller.UserRoleEdit)
 
-		//InitSensitiveWords
-		v1.GET("/migrate_sensitive_words", controller.MigrateSensitiveWords)
+		//SensitiveWords
+		v1.GET("/sensitiveWords/migrate", controller.SensitiveWordsMigrate)
+		v1.GET("/sensitiveWords/list", controller.SensitiveWordsList)
+		v1.GET("/sensitiveWords/destroy", controller.SensitiveWordsDestroy)
+		v1.GET("/sensitiveWords/add", controller.SensitiveWordsAdd)
+
 	}
 
 	return r

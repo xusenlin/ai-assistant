@@ -5,11 +5,11 @@ import { resetArgs } from "@/utils/app"
 export default function () {
     const tableData = ref([])
     const paginationRef = ref<{ Refresh:()=>void, QueryParams:()=>void } | null>(null);
-    const searchParams = ref<any>({"id":"","name":"","tags":[]})
+    const searchParams = ref<any>({})
 
     const setTableData = (r:any) :void => {
-        if(Array.isArray(r.records) && r.records.length!==0){
-            tableData.value = r.records||[]
+        if(Array.isArray(r.List) && r.List.length!==0){
+            tableData.value = r.List||[]
         }
     }
 

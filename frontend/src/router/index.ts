@@ -1,12 +1,14 @@
 import {Common} from "./modules/common"
 import {Dashboard} from "./modules/dashboard"
 import {System} from "./modules/sysyem"
+import {SensitiveWords} from "./modules/sensitiveWords.ts"
 import {createRouter, createWebHashHistory, RouteRecordRaw} from 'vue-router'
 
 //这里可以根据权限做动态路由
 const menuRoute: RouteRecordRaw[] = [
   Dashboard,
   System,
+  SensitiveWords
 ]
 
 

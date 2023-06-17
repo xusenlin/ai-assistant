@@ -65,8 +65,8 @@ const getPageData = (): void => {
 
   props.reqFunc(params).then((result: any) => {
     let r = props.pageField ? result[props.pageField] : result
-    data.pageParams.pageNum = r.pages;
-    data.total = parseInt(r.total) || 0;
+    data.pageParams.pageNum = r.PageIndex;
+    data.total = parseInt(r.Total) || 0;
     emit("pageData", result);
   }).catch((e) => {
     console.log(e)
