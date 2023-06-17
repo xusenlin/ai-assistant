@@ -22,14 +22,6 @@ func InitRouter() *gin.Engine {
 
 		//r.Static(config.Cfg.WebsUrl, config.Cfg.WebRootDir)
 		//r.Static("/public", config.Cfg.ClientDir)
-
-		r.GET("/", func(c *gin.Context) {
-			c.Redirect(http.StatusMovedPermanently, "/public")
-		})
-
-		//r.Any(config.Cfg.WebHookUrl, controller.TaskWebHook)
-		//r.GET("/run_task_and_pack", controller.RunTaskAndPack)
-		//r.Any("/websocket", controller.WebsocketMsg)
 	}
 
 	v1Public := r.Group("/v1")
@@ -38,7 +30,7 @@ func InitRouter() *gin.Engine {
 		v1Public.POST("/register", controller.UserRegister)
 	}
 
-	v1 := r.Group("/v1").Use(middlewares.JWTAuth())
+	v1 := r.Group("/v1").Use(middlewares.AdminAuth())
 	{
 
 		////user
@@ -46,6 +38,8 @@ func InitRouter() *gin.Engine {
 		//v1.GET("/user/delete", middlewares.RoleSuperAdmin(), controller.UserDestroy)
 		//v1.GET("/user/role_edit", middlewares.RoleSuperAdmin(), controller.UserRoleEdit)
 
+		//InitSensitiveWords
+		v1.GET("/migrate_sensitive_words", controller.MigrateSensitiveWords)
 	}
 
 	return r

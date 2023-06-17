@@ -9,11 +9,6 @@ import (
 	"time"
 )
 
-const ( //用户状态
-	UserStatusEnabled  = 1
-	UserStatusDisabled = 2
-)
-
 const (
 	PasswordSalt        = "go-admin"     //密码加盐
 	TokenExpireDuration = time.Hour * 10 //Token过期时间
@@ -27,16 +22,20 @@ type Claims struct {
 	ID       uint
 	Username string
 	Status   int
+	IsAdmin  bool
 	jwt.RegisteredClaims
 }
 
 type User struct {
 	gorm.Model
-	Username string `json:"username" gorm:"type:varchar(45);unique;comment:用户名" binding:"required,min=2,max=18"`
-	Password string `json:"password"  gorm:"type:varchar(200)" binding:"required,min=6,max=16"`
-	Status   int    `json:"status" gorm:"default:2"`
-	Avatar   string `json:"avatar"`
-	Desc     string `json:"desc" gorm:"type:varchar(200)"`
+	Username               string `gorm:"type:varchar(45);unique;comment:用户名" binding:"required,min=2,max=18"`
+	Password               string `gorm:"type:varchar(200)" binding:"required,min=6,max=16"`
+	Status                 int    `gorm:"default:0"`
+	Avatar                 string `gorm:"type:varchar(255)"`
+	IsAdmin                bool   `gorm:"type:tinyint(1)"`
+	TokenConsumed          int    `gorm:"default:0"`
+	RemainingDialogueCount int    `gorm:"default:0"`
+	Desc                   string `gorm:"type:varchar(500)"`
 }
 
 func (u *User) Register() (err error) {
@@ -46,9 +45,10 @@ func (u *User) Register() (err error) {
 	}
 
 	if u.Username == "Admin" {
-		u.Status = UserStatusEnabled
+		u.Status = StatusEnabled
+		u.IsAdmin = true
 	} else {
-		u.Status = UserStatusDisabled
+		u.Status = StatusDisabled
 	}
 	u.Password = helper.DigestString(PasswordSalt + u.Password)
 
@@ -63,11 +63,11 @@ func (u *User) Login() error {
 	if err != nil {
 		return err
 	}
-	if u.Status != UserStatusEnabled {
+	if u.Status != StatusEnabled {
 		return errors.New("user is disabled")
 	}
 
-	//u.Password = "***"
+	u.Password = "***"
 
 	return nil
 }
