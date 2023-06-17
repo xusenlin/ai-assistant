@@ -2,6 +2,7 @@ package serviceSensitiveWord
 
 import (
 	"bufio"
+	"errors"
 	"go-admin/global"
 	"go-admin/models"
 	"io"
@@ -30,8 +31,17 @@ func AddAllWord() error {
 }
 
 func Migrate() error {
-	var sensitiveWords []models.SensitiveWord
+	var count int64
+
+	if err := global.DB.Model(&models.SensitiveWord{}).Count(&count).Error; err != nil {
+		return err
+	}
+	if count != 0 {
+		return errors.New("敏感词迁移需要运维人员删除表的全部数据才能重新迁移")
+	}
+
 	buf := bufio.NewReader(strings.NewReader(global.SensitiveWords))
+
 	for {
 		line, _, err := buf.ReadLine()
 		if err != nil {
@@ -40,13 +50,16 @@ func Migrate() error {
 			}
 			break
 		}
-		sensitiveWords = append(sensitiveWords, models.SensitiveWord{
+		m := models.SensitiveWord{
 			Name:   string(line),
 			Status: models.StatusEnabled,
-		})
+		}
+
+		if err := global.DB.Create(&m).Error; err != nil {
+			return err
+		}
+
 	}
-	if err := global.DB.Create(&sensitiveWords).Error; err != nil {
-		return err
-	}
+
 	return nil
 }
