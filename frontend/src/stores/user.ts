@@ -5,8 +5,14 @@ import {storagePrefixKey} from "@/config/app"
 const UIK = storagePrefixKey + "User"
 
 export type User = {
-  name: string,
-  token: string
+  "ID": number,
+  "CreatedAt": string,
+  "UpdatedAt": string,
+  "Username":string,
+  "IsAdmin": boolean,
+  "TokenConsumed": number,
+  "RemainingDialogueCount": number,
+  "Token": string
 }//自己完善
 
 export interface UserStore {
@@ -23,8 +29,8 @@ export const useUserStore = defineStore("user", {
     }
   },
   getters: {
-    token: (state) => state.info.token,
-    userName: (state) => state.info.name,
+    token: (state) => state.info.Token,
+    userName: (state) => state.info.Username,
   },
   actions: {
     updateUserInfo(user: User) {
@@ -50,5 +56,5 @@ export const getUserInfoByKey = (k: keyof User): any => {
 
 export const getToken = (): string => {
   let u = getUserInfo()
-  return u["token"]
+  return u["Token"]
 }

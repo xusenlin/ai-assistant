@@ -10,7 +10,7 @@ const menuRoute: RouteRecordRaw[] = [
 ]
 
 
-const whiteList: string[] = ['/login']//不需要登录也能查看的路由,最少需要'/login'，要不然会一直重定向到login
+const whiteList: string[] = ['/login','/register']//不需要登录也能查看的路由,最少需要'/login'，要不然会一直重定向到login
 
 export default createRouter({
   history: createWebHashHistory(),

@@ -2,8 +2,9 @@
 import {useRouter} from "vue-router";
 import { appName,version } from "@/config/app"
 import {useUserStore} from "@/stores/user";
-import {login, register} from "@/api/user.ts"
+import { register } from "@/api/user.ts"
 import {reactive, ref} from "vue";
+import {ElMessage} from "element-plus";
 
 enum PasswordType {
   Password = "password",
@@ -23,13 +24,10 @@ const passwordTypeChange = () => {
 }
 
 const submit = ()=>{
-  login(form).then(r=>{
-    userStore.updateUserInfo(r)
-    router.push("/")
+  register(form).then(()=>{
+    ElMessage.success("注册成功")
+    router.push("/login")
   })
-}
-const toRegister = ()=>{
-  router.push("/register")
 }
 </script>
 
@@ -70,8 +68,7 @@ const toRegister = ()=>{
 
           </template>
         </el-input>
-        <el-button size="large"  type="primary" @click="submit()" style="width: 100%;">登录</el-button>
-        <el-button style="margin-top:10px" type="text" @click="toRegister">还没有账户点击此注册</el-button>
+        <el-button size="large"  type="primary" @click="submit()" style="width: 100%;">注册</el-button>
       </el-form>
     </div>
   </div>

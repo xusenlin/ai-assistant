@@ -43,6 +43,7 @@ func (u *User) Register() (err error) {
 	if global.DB.Where("username = ?", u.Username).First(&User{}).Error != gorm.ErrRecordNotFound {
 		return errors.New("username already exists")
 	}
+	global.DB.Error = nil
 
 	if u.Username == "Admin" {
 		u.Status = StatusEnabled
