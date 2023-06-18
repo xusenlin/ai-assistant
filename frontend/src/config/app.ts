@@ -15,7 +15,7 @@ export const tokenKey = storagePrefixKey+"token"
 export const userInfoKey = storagePrefixKey+"userInfo"
 
 
-export const appName = "ChatGpt 管理系统"
+export const appName = "AI 助手管理系统"
 
 export const pageSizesArr = [30, 60, 100]
 

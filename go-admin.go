@@ -10,10 +10,18 @@ import (
 func main() {
 
 	global.InitDb()
-	models.AutoMigrate()
+	err := models.AutoMigrate()
+	if err != nil {
+		panic(err)
+	}
+
+	err = models.InitOpenaiOption()
+	if err != nil {
+		panic(err)
+	}
 
 	global.InitSensitiveWords()
-	err := serviceSensitiveWord.AddAllWord()
+	err = serviceSensitiveWord.AddAllWord()
 	if err != nil {
 		panic(err)
 	}

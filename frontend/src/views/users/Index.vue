@@ -18,7 +18,7 @@
       <el-table-column fixed="right"  label="操作" width="460">
         <template #default="scope">
 
-          <el-button  :type="scope.row.Status==0?'success':'warning'" @click.prevent="setStatus(scope.row)">
+          <el-button v-if="scope.row.Username!=='Admin'" :type="scope.row.Status==0?'success':'warning'" @click.prevent="setStatus(scope.row)">
             {{ scope.row.Status ==0 ? "启用":"禁用"}}
           </el-button>
 

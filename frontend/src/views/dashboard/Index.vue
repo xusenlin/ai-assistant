@@ -1,26 +1,16 @@
 <script setup lang="ts">
-
+import Openai from "./Openai.vue"
 
 </script>
 
 <template>
-  <h1> </h1>
+  <div class="home">
+    <Openai/>
+  </div>
 </template>
 
 <style scoped>
-a {
-  color: #42b983;
-}
-
-label {
-  margin: 0 0.5em;
-  font-weight: bold;
-}
-
-code {
-  background-color: #eee;
-  padding: 2px 4px;
-  border-radius: 4px;
-  color: #304455;
+.home{
+  padding: 20px;
 }
 </style>

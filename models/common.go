@@ -38,9 +38,10 @@ func Paginate(db *gorm.DB, pageIndex, pageSize int, results interface{}) (pageIn
 	return pageInfo, nil
 }
 
-func AutoMigrate() {
-	global.DB.AutoMigrate(
+func AutoMigrate() error {
+	return global.DB.AutoMigrate(
 		&User{},
 		&SensitiveWord{},
+		&Option{},
 	)
 }

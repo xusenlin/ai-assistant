@@ -39,9 +39,9 @@ func InitRouter() *gin.Engine {
 		v1.GET("/user/updateStatus", controller.UserUpdateStatus)
 		v1.GET("/user/updatePassword", controller.UserUpdatePassword)
 		v1.GET("/user/updateRemainingDialogueCount", controller.UserUpdateRemainingDialogueCount)
-		//v1.GET("/user/delete", middlewares.RoleSuperAdmin(), controller.UserDestroy)
-		//v1.GET("/user/role_edit", middlewares.RoleSuperAdmin(), controller.UserRoleEdit)
-
+		//option
+		v1.GET("/option/get", controller.OptionGet)
+		v1.GET("/option/set", controller.OptionSet)
 		//SensitiveWords
 		v1.GET("/sensitiveWords/migrate", controller.SensitiveWordsMigrate)
 		v1.GET("/sensitiveWords/list", controller.SensitiveWordsList)
