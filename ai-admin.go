@@ -23,7 +23,7 @@ func main() {
 	}
 
 	global.InitSensitiveWords()
-	err = serviceSensitiveWord.AddAllWord()
+	err = serviceSensitiveWord.ResetAllWord()
 	if err != nil {
 		panic(err)
 	}
