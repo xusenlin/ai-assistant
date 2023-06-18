@@ -45,7 +45,7 @@ go build ai-admin
 
 
 
-
+## 交叉编译
 在win 11 cmd或者powershell执行以下命令
 
 set GOARCH=amd64
