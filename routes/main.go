@@ -55,5 +55,10 @@ func InitRouter() *gin.Engine {
 
 	}
 
+	customer := r.Group("/customer").Use(middlewares.CustomerAuth())
+	{
+		customer.GET("/gpt", controller.UsersFind)
+	}
+
 	return r
 }
