@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"go-admin/global"
+	"go-admin/helper"
 	"go-admin/models"
 	"go-admin/service/serviceUser"
 	"net/http"
@@ -142,4 +143,80 @@ func UserDestroy(c *gin.Context) {
 		"Msg":    "",
 	})
 
+}
+
+func UserUpdateRemainingDialogueCount(c *gin.Context) {
+	id := c.Query("id")
+	count := c.Query("count")
+
+	err := new(models.User).UpdateField(id, "remaining_dialogue_count", count)
+
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"Status": false,
+			"Data":   "",
+			"Msg":    err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"Status": true,
+		"Data":   id,
+		"Msg":    "",
+	})
+}
+
+func UserUpdateStatus(c *gin.Context) {
+	id := c.Query("id")
+	status := c.Query("status")
+
+	err := new(models.User).UpdateField(id, "status", status)
+
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"Status": false,
+			"Data":   "",
+			"Msg":    err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"Status": true,
+		"Data":   id,
+		"Msg":    "",
+	})
+}
+
+func UserUpdatePassword(c *gin.Context) {
+	id := c.Query("id")
+	password := c.Query("password")
+	if len(password) < 6 {
+		c.JSON(http.StatusOK, gin.H{
+			"Status": false,
+			"Data":   "",
+			"Msg":    "密码最少6位",
+		})
+		return
+	}
+
+	md5 := helper.DigestString(models.PasswordSalt + password)
+
+	err := new(models.User).UpdateField(id, "password", md5)
+
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"Status": false,
+			"Data":   "",
+			"Msg":    err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"Status": true,
+		"Data":   id,
+		"Msg":    "",
+	})
 }

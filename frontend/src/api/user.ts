@@ -34,3 +34,27 @@ export function destroy(params:{id:number})  {
     params
   })
 }
+
+
+//
+export function updateStatus(params:{id:number,status:number})  {
+  return r.request({
+    url: '/v1/user/updateStatus',
+    method: 'get',
+    params
+  })
+}
+export function updatePassword(params:{id:number,password:string})  {
+  return r.request({
+    url: '/v1/user/updatePassword',
+    method: 'get',
+    params
+  })
+}
+export function updateRemainingDialogueCount(params:{id:number,count:number})  {
+  return r.request({
+    url: '/v1/user/updateRemainingDialogueCount',
+    method: 'get',
+    params
+  })
+}
