@@ -21,7 +21,12 @@ func InitRouter() *gin.Engine {
 		})
 
 		//r.Static(config.Cfg.WebsUrl, config.Cfg.WebRootDir)
-		r.Static("/admin", "frontend/dist")
+		r.Static("/admin", "frontendAdmin/dist")
+		r.Static("/customer", "frontendCustomer/dist")
+
+		r.GET("/", func(c *gin.Context) {
+			c.Redirect(http.StatusMovedPermanently, "/customer")
+		})
 	}
 
 	v1Public := r.Group("/v1")
