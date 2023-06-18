@@ -3,6 +3,7 @@ package serviceSensitiveWord
 import (
 	"bufio"
 	"errors"
+	"github.com/importcjj/sensitive"
 	"go-admin/global"
 	"go-admin/models"
 	"io"
@@ -18,12 +19,15 @@ func FindAll() ([]models.SensitiveWord, error) {
 	return sensitiveWords, nil
 }
 
-func AddAllWord() error {
+func ResetAllWord() error {
 	words, err := FindAll()
 
 	if err != nil {
 		return err
 	}
+
+	global.SensitiveWordsFilter = sensitive.New()
+	
 	for _, word := range words {
 		global.SensitiveWordsFilter.AddWord(word.Name)
 	}

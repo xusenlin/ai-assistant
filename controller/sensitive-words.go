@@ -50,7 +50,7 @@ func SensitiveWordsMigrate(c *gin.Context) {
 		return
 	}
 
-	if err := serviceSensitiveWord.AddAllWord(); err != nil {
+	if err := serviceSensitiveWord.ResetAllWord(); err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"Status": false,
 			"Data":   "",
@@ -70,7 +70,8 @@ func SensitiveWordsMigrate(c *gin.Context) {
 func SensitiveWordsDestroy(c *gin.Context) {
 	id := c.Query("id")
 
-	err := new(models.SensitiveWord).Destroy(id)
+	w := new(models.SensitiveWord)
+	err := w.Destroy(id)
 
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
@@ -80,6 +81,8 @@ func SensitiveWordsDestroy(c *gin.Context) {
 		})
 		return
 	}
+
+	global.SensitiveWordsFilter.DelWord(w.Name)
 
 	c.JSON(http.StatusOK, gin.H{
 		"Status": true,
@@ -110,6 +113,7 @@ func SensitiveWordsAdd(c *gin.Context) {
 		})
 		return
 	}
+	global.SensitiveWordsFilter.AddWord(word)
 
 	c.JSON(http.StatusOK, gin.H{
 		"Status": true,
