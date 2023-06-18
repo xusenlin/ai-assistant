@@ -55,7 +55,7 @@ func InitRouter() *gin.Engine {
 
 	}
 
-	customer := r.Group("/customer").Use(middlewares.CustomerAuth())
+	customer := r.Group("/api").Use(middlewares.CustomerAuth())
 	{
 		customer.GET("/gpt", controller.UsersFind)
 	}
