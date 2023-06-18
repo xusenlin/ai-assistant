@@ -33,7 +33,7 @@ const deleteRow = index=>{
     ElMessage.warning("最少保留一个key")
     return
   }
-  let keys = []
+  let keys:string[] = []
   openaiKeys.value.forEach((v,i)=>{
     if(i!==index){
       keys.push(v.val)

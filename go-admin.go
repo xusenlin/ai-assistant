@@ -29,5 +29,6 @@ func main() {
 	}
 
 	r := routes.InitRouter()
+
 	r.Run(":" + global.CmdParams.Port)
 }

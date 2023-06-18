@@ -21,7 +21,7 @@ func InitRouter() *gin.Engine {
 		})
 
 		//r.Static(config.Cfg.WebsUrl, config.Cfg.WebRootDir)
-		//r.Static("/public", config.Cfg.ClientDir)
+		r.Static("/admin", "frontend/dist")
 	}
 
 	v1Public := r.Group("/v1")

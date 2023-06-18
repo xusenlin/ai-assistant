@@ -1,4 +1,7 @@
-export const  baseURL:string = import.meta.env.VITE_BASE_URL
+import {isProduction} from "@/config/app.ts";
+
+
+export const  baseURL:string = isProduction ? window.location.origin:import.meta.env.VITE_BASE_URL
 
 export const  timeout = 80000
 

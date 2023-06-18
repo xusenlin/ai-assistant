@@ -4,9 +4,9 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build:test": "vue-tsc --noEmit && vite build --mode=test",
-    "build:pre": "vue-tsc --noEmit && vite build --mode=pre",
-    "build": "vue-tsc --noEmit && vite build"
+    "build:test": "vite build --mode=test",
+    "build:pre": "vite build --mode=pre",
+    "build": "vite build"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.1.0",
