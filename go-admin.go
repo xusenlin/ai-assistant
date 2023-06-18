@@ -9,6 +9,8 @@ import (
 
 func main() {
 
+	global.InitParseParams()
+
 	global.InitDb()
 	err := models.AutoMigrate()
 	if err != nil {
@@ -27,5 +29,5 @@ func main() {
 	}
 
 	r := routes.InitRouter()
-	r.Run(":8088")
+	r.Run(":" + global.CmdParams.Port)
 }
