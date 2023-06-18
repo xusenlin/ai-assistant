@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/pkoukk/tiktoken-go"
 	"github.com/sashabaranov/go-openai"
 	"go-admin/global"
 	"go-admin/service/serviceOpenai"
@@ -48,18 +49,29 @@ func GPT3Dot5Turbo(c *gin.Context) {
 		c.String(http.StatusBadRequest, openaiErr.Error())
 		return
 	}
-	stream, err := client.CreateChatCompletionStream(c, openai.ChatCompletionRequest{
+	stream, clientErr := client.CreateChatCompletionStream(c, openai.ChatCompletionRequest{
 		Model:     openai.GPT3Dot5Turbo,
 		MaxTokens: 2000,
 		Stream:    true,
 		Messages:  chat,
 	})
-	if err != nil {
+	if clientErr != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 	defer stream.Close()
-	
+	var lastAnswer = ""
+	defer func() {
+		token := 0
+		tkm, err := tiktoken.EncodingForModel("gpt-3.5-turbo")
+		if err == nil {
+			token = len(tkm.Encode(lastAnswer, nil, nil))
+		}
+		user.RemainingDialogueCount = user.RemainingDialogueCount - 1
+		user.TokenConsumed = user.TokenConsumed + token
+		global.DB.Save(user)
+	}()
+
 	for {
 		response, err := stream.Recv()
 		if errors.Is(err, io.EOF) {
@@ -73,6 +85,7 @@ func GPT3Dot5Turbo(c *gin.Context) {
 
 		content := response.Choices[0].Delta.Content
 		fmt.Fprint(c.Writer, content)
+		lastAnswer = lastAnswer + content
 		c.Writer.Flush()
 	}
 }
