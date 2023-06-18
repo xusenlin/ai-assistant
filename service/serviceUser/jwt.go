@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"go-admin/global"
 	"go-admin/models"
 	"time"
 )
@@ -46,4 +47,17 @@ func GetJwtClaimsByContext(c *gin.Context) (*models.Claims, error) {
 		return &models.Claims{}, errors.New(" User information assertion failed")
 	}
 	return claims, nil
+}
+
+func GetUserByContext(c *gin.Context) (*models.User, error) {
+	claims, err := GetJwtClaimsByContext(c)
+	if err != nil {
+		return nil, err
+	}
+	var user models.User
+	err = global.DB.Where("id = ?", claims.ID).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
