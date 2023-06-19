@@ -56,7 +56,7 @@ func GPT3Dot5Turbo(c *gin.Context) {
 		Messages:  chat,
 	})
 	if clientErr != nil {
-		c.String(http.StatusBadRequest, err.Error())
+		c.String(http.StatusBadRequest, clientErr.Error())
 		return
 	}
 	defer stream.Close()

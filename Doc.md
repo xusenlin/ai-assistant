@@ -36,6 +36,8 @@ go build ai-admin
 
 
 
+go env -w CGO_ENABLED=1
+
 
 
 ## 交叉编译

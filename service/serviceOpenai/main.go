@@ -33,7 +33,8 @@ func NewOpenaiByOption() (*openai.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	if len(optionUrl.OptionValue) == 0 || strings.HasPrefix(optionUrl.OptionValue, "http") {
+
+	if len(optionUrl.OptionValue) == 0 || !strings.HasPrefix(optionUrl.OptionValue, "http") {
 		return nil, errors.New("请联系管理员配置正确的url")
 	}
 

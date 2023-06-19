@@ -55,10 +55,7 @@ func InitRouter() *gin.Engine {
 
 	}
 
-	customer := r.Group("/api").Use(middlewares.CustomerAuth())
-	{
-		customer.GET("/openai/GPT3Dot5Turbo", controller.GPT3Dot5Turbo)
-	}
+	r.POST("/api/openai/GPT3Dot5Turbo", middlewares.CustomerAuth(false), controller.GPT3Dot5Turbo)
 
 	return r
 }
