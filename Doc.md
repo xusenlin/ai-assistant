@@ -1,6 +1,6 @@
 
 ## 部署环境要求：
-- Mysql
+
 - Golang 环境
 - Node 环境
 ## git仓库：
@@ -22,18 +22,11 @@ go build ai-admin
 ## 运行
 可以直接命令行运行或者使用pm2之类的进程管理器
 ```
-./ai-admin -dbName=ai -port=8088
+./ai-admin  -port=8088
 ```
 
 ## 参数说明
-- dbName string
-数据库名字，默认ai-admin (default "ai-admin")
-- dbPort string
-数据库端口号，默认3306 (default "3306")
-- dbPwd string
-数据库密码，默认12345678 (default "12345678")
-- dbUserName string
-数据库用户，默认senlin (default "senlin")
+
 - port string
 监听端口号，默认8088 (default "8088")
 
