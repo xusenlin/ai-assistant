@@ -1,4 +1,3 @@
-
 ## 部署环境要求：
 
 - Golang 环境
@@ -23,6 +22,8 @@ go build ai-admin
 可以直接命令行运行或者使用pm2之类的进程管理器
 ```
 ./ai-admin  -port=8088
+
+ nohup ./ai-admin > ai-admin.log 2>&1 &
 ```
 
 ## 参数说明
