@@ -7,14 +7,14 @@
   >
     <CellGroup inset style="margin-top: 40px">
       <Field
-          v-model="phone"
-          name="phone"
+          v-model="username"
+          name="username"
           label="用户名"
           placeholder="请填写用户名"
       />
       <Field
-          v-model="msg"
-          name="msg"
+          v-model="password"
+          name="password"
           type="password"
           label="验证码"
           placeholder="请填写密码"
@@ -36,7 +36,7 @@
 <script setup>
 import { ref } from "vue"
 import { Button,CellGroup,Field ,showToast,Popup,Checkbox} from "vant"
-import { wxUserLogin } from "@/api/inex.js"
+import { login } from "@/api/inex.js"
 import { setToken,setUserInfo } from "@/utils/common.js"
 
 defineProps({
@@ -45,8 +45,8 @@ defineProps({
 const emit  = defineEmits(['success'])
 
 
-const msg = ref('');
-const phone = ref('');
+const username = ref('');
+const password = ref('');
 
 const checked = ref(false)
 
@@ -57,23 +57,21 @@ const onSubmit = async () => {
     showToast("请阅读并同意《用户隐私政策》")
     return
   }
-  if(!msg.value){
-    showToast("请填写验证码")
+  if(!username.value){
+    showToast("请填写用户名")
     return
   }
-  if(phone.value.length !==11){
-    showToast("请正确填写手机号")
+  if(!password.value){
+    showToast("请正确填写密码")
     return
   }
-  const user = await wxUserLogin({
-    mobileCode:msg.value,
-    userTel:phone.value,
-    vcode:window.$pageParams.code
+  const user = await login({
+    Password:password.value,
+    Username:username.value,
   })
 
-  let info = user.tokenInfo ||{}
-  setUserInfo(info)
-  setToken("Bearer "+ info.tokenValue)
+  setUserInfo(user)
+  setToken(user.Token)
   emit('success')
 };
 </script>

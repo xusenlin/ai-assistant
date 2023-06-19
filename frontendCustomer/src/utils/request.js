@@ -1,7 +1,6 @@
 import Axios from "axios";
-import { getToken,getCurrentUrl,removeToken } from "@/utils/common.js";
+import { getToken } from "@/utils/common.js";
 import { showLoadingToast,closeToast,showToast } from "vant";
-import { appid } from "@/config/app"
 import { baseURL,timeout,requestRetryDelay,requestRetry } from "@/config/request";
 
 const service = Axios.create({
@@ -40,34 +39,11 @@ service.interceptors.response.use(
       showToast('数据返回出错');
       return Promise.reject("响应非200！");
     } else {
-      if(res.data.code === "401"){
-        showLoadingToast({
-          message: '登录失效，正在重新登录',
-          forbidClick: true,
-        });
-        removeToken()
-        setTimeout(()=>{
-          window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appid}&redirect_uri=${getCurrentUrl()}&response_type=code&scope=snsapi_base&state=123#wechat_redirect`
-        },600)
-        return
-      }
-      if(res.data.code === "A0215"){//code失效
-        showLoadingToast({
-          message: '微信授权失败，正在重新授权登录',
-          forbidClick: true,
-        });
-        removeToken()
-        setTimeout(()=>{
-          window.location.href = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appid}&redirect_uri=${getCurrentUrl()}&response_type=code&scope=snsapi_base&state=123#wechat_redirect`
-        },600)
-        return
-      }
-      if (res.data.code != '00000') {
-        //统一处理错误
-        showToast(res.data.msg);
-        return Promise.reject("error");
-      }
-      return res.data.data;
+        if(!res.data.Status){
+            showToast(res.data.Msg);
+            return Promise.reject(res.data.Msg);
+        }
+      return res.data.Data;
     }
   },
   error => {
