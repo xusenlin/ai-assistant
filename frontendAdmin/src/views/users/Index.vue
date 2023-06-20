@@ -2,7 +2,7 @@
   <div class="box">
     <ActionBar @reset="resetParams" @refresh="refreshTable">
       <template #left>
-<!--        <el-button type="primary" @click="addSensitiveWords()">添加</el-button>-->
+        <el-button type="primary" @click="addUsers()">添加用户</el-button>
       </template>
       <template #right>
 <!--        <el-input v-model="searchParams.id" placeholder="请输入ID"  clearable />-->
@@ -35,6 +35,7 @@
       </el-table-column>
     </el-table>
     <Pagination ref="paginationRef" :params="searchParams" :reqFunc="userList" @pageData="setTableData" />
+    <AddUsers ref="showAddUsers" @success="refreshTable()"/>
   </div>
 </template>
 
@@ -42,13 +43,16 @@
 import { userList } from "@/api/user.ts"
 import usePagination from "@/compositionApi/pagination.ts"
 import useExtraAction from "./extraAction"
-
+import AddUsers from "@/views/users/AddUsers.vue";
+import {ref} from "vue";
 
 const {searchParams, tableData, paginationRef, setTableData, refreshTable,resetParams} =  usePagination()
 const { deleteRow,setPassword,setStatus,setRemainingDialogueCount } = useExtraAction(refreshTable)
 
-
-
+const showAddUsers = ref<{Show:()=>void}>()
+const addUsers = ()=>{
+  showAddUsers.value?.Show()
+}
 
 </script>
 

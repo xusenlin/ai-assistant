@@ -71,3 +71,15 @@ func ComputeTotalPage(total, pageSize int) int {
 	}
 	return totalPage
 }
+
+func RemoveDuplicate(strs []string) []string {
+	result := []string{}
+	tempMap := map[string]byte{}
+	for _, str := range strs {
+		if _, ok := tempMap[str]; !ok {
+			tempMap[str] = 0
+			result = append(result, str)
+		}
+	}
+	return result
+}

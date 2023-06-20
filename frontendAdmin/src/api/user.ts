@@ -58,3 +58,12 @@ export function updateRemainingDialogueCount(params:{id:number,count:number})  {
     params
   })
 }
+
+
+export function batchAddUser(data:any)  {
+  return r.request({
+    url: '/v1/user/batchAddUser',
+    method: 'post',
+    data,
+  })
+}

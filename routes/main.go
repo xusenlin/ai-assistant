@@ -1,11 +1,10 @@
 package routes
 
 import (
+	"github.com/gin-gonic/gin"
 	"go-admin/controller"
 	"go-admin/middlewares"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
 func InitRouter() *gin.Engine {
@@ -13,6 +12,7 @@ func InitRouter() *gin.Engine {
 	gin.SetMode("debug")
 
 	r := gin.Default()
+
 	r.Use(middlewares.Cors())
 
 	{
@@ -44,6 +44,8 @@ func InitRouter() *gin.Engine {
 		v1.GET("/user/updateStatus", controller.UserUpdateStatus)
 		v1.GET("/user/updatePassword", controller.UserUpdatePassword)
 		v1.GET("/user/updateRemainingDialogueCount", controller.UserUpdateRemainingDialogueCount)
+		v1.POST("/user/batchAddUser", controller.UserBatchAdd)
+
 		//option
 		v1.GET("/option/get", controller.OptionGet)
 		v1.GET("/option/set", controller.OptionSet)

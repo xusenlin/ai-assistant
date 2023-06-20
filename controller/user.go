@@ -8,6 +8,7 @@ import (
 	"go-admin/service/serviceUser"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func UserRegister(c *gin.Context) {
@@ -218,5 +219,56 @@ func UserUpdatePassword(c *gin.Context) {
 		"Status": true,
 		"Data":   id,
 		"Msg":    "",
+	})
+}
+
+type ReqUsers struct {
+	Username               string `binding:"required,min=2,max=1000"`
+	Password               string `binding:"required,min=6,max=16"`
+	Status                 int
+	IsAdmin                bool
+	RemainingDialogueCount int
+}
+
+func UserBatchAdd(c *gin.Context) {
+	var req ReqUsers
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"Status": false,
+			"Data":   "",
+			"Msg":    err.Error(),
+		})
+		return
+	}
+
+	var users []models.User
+
+	req.Username = strings.ReplaceAll(req.Username, "，", ",")
+
+	usernames := strings.Split(req.Username, ",")
+
+	for _, u := range helper.RemoveDuplicate(usernames) {
+		users = append(users, models.User{
+			Username:               strings.Trim(u, " "),
+			Password:               helper.DigestString(models.PasswordSalt + req.Password),
+			Status:                 req.Status,
+			IsAdmin:                req.IsAdmin,
+			RemainingDialogueCount: req.RemainingDialogueCount,
+		})
+	}
+
+	if err := global.DB.Create(&users).Error; err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"Status": false,
+			"Data":   "",
+			"Msg":    err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"Status": true,
+		"Data":   len(users),
+		"Msg":    "成功添加",
 	})
 }
