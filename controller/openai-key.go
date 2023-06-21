@@ -5,6 +5,7 @@ import (
 	"go-admin/global"
 	"go-admin/models"
 	"net/http"
+	"time"
 )
 
 func OpenaiKeyFindAll(c *gin.Context) {
@@ -19,6 +20,13 @@ func OpenaiKeyFindAll(c *gin.Context) {
 		})
 		return
 	}
+
+	for i, k := range keys {
+		if k.ExpirationTime < time.Now().UTC().Unix() {
+			keys[i].Status = models.StatusDisabled
+		}
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"Status": true,
 		"Data":   keys,
