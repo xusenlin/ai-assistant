@@ -1,9 +1,6 @@
+export const envMode  = import.meta.env.MODE
 
-export const version = "0.1.0"
+export const isProduction = envMode === "production"
 
-export const tokenKey = "Q_L_R_R_ACCESS_TOKEN"
-
-export const userInfoKey = "Q_L_R_R_USER_INFO"
-
-
-
+export const storageKeyUser = 'AI:USER'
+export const storageKeyToken = 'AI:TOKEN'

@@ -11,7 +11,7 @@ import (
 
 const (
 	PasswordSalt        = "go-admin"     //密码加盐
-	TokenExpireDuration = time.Hour * 10 //Token过期时间
+	TokenExpireDuration = time.Hour * 72 //Token过期时间
 	JwtClaimsKey        = "JwtClaims"    //Claims 储存在 *gin.Context 里的关键字，通过JWTAuth中间件设置。
 	SuperAdministrator  = "Admin"
 )
@@ -67,10 +67,10 @@ func (u *User) Login() error {
 
 	err := global.DB.Where("username = ? AND password = ?", u.Username, password).First(&u).Error
 	if err != nil {
-		return err
+		return errors.New("用户不存在")
 	}
 	if u.Status != StatusEnabled {
-		return errors.New("user is disabled")
+		return errors.New("用户已经被禁用")
 	}
 
 	u.Password = "***"
