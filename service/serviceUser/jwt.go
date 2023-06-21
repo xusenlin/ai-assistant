@@ -27,24 +27,24 @@ func ParseToken(tokenString string) (*models.Claims, error) {
 		return models.TokenSecret, nil
 	})
 	if err != nil {
-		return nil, err
+		return nil, errors.New("Token 无效或已经过期，请重新登录")
 	}
 	if claims, ok := token.Claims.(*models.Claims); ok && token.Valid { // 校验token
 		return claims, nil
 	}
-	return nil, errors.New("Token invalid ")
+	return nil, errors.New("Token 无效，请重新登录")
 }
 
 func GetJwtClaimsByContext(c *gin.Context) (*models.Claims, error) {
 
 	jwtClaims, hasClaims := c.Get(models.JwtClaimsKey)
 	if !hasClaims {
-		return &models.Claims{}, errors.New(" User information is lost")
+		return &models.Claims{}, errors.New("用户信息已丢失")
 	}
 
 	claims, ok := jwtClaims.(*models.Claims)
 	if !ok {
-		return &models.Claims{}, errors.New(" User information assertion failed")
+		return &models.Claims{}, errors.New("用户信息断言失败")
 	}
 	return claims, nil
 }

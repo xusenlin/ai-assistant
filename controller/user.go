@@ -18,7 +18,7 @@ func UserRegister(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"Status": false,
 			"Data":   "",
-			"Msg":    err.Error(),
+			"Msg":    global.Trans(err).Error(),
 		})
 		return
 	}
@@ -46,7 +46,7 @@ func UserLogin(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"Status": false,
 			"Data":   "",
-			"Msg":    err.Error(),
+			"Msg":    global.Trans(err).Error(),
 		})
 		return
 	}
@@ -237,7 +237,7 @@ func UserBatchAdd(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"Status": false,
 			"Data":   "",
-			"Msg":    err.Error(),
+			"Msg":    global.Trans(err).Error(),
 		})
 		return
 	}
