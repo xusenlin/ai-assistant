@@ -49,6 +49,13 @@ func InitRouter() *gin.Engine {
 		//option
 		v1.GET("/option/get", controller.OptionGet)
 		v1.GET("/option/set", controller.OptionSet)
+
+		//openai keys
+		v1.GET("/openai/keys", controller.OpenaiKeyFindAll)
+		v1.GET("/openai/key/destroy", controller.OpenaiKeyDestroy)
+		v1.POST("/openai/key/add", controller.OpenaiKeyAdd)
+		//v1.GET("/openai/add", controller.OptionSet)
+
 		//SensitiveWords
 		v1.GET("/sensitiveWords/migrate", controller.SensitiveWordsMigrate)
 		v1.GET("/sensitiveWords/list", controller.SensitiveWordsList)

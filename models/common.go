@@ -43,5 +43,6 @@ func AutoMigrate() error {
 		&User{},
 		&SensitiveWord{},
 		&Option{},
+		&OpenaiKey{},
 	)
 }

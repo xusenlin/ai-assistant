@@ -1,47 +1,38 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { getOptionByKey,setOptionByKey } from "@/api/option.ts"
+import {ref} from 'vue'
+import {getOptionByKey, setOptionByKey} from "@/api/option.ts"
 import {ElMessage, ElMessageBox} from "element-plus";
+import {getOpenaiKey,add,destroy, OpenaiKey} from "@/api/demo/openaiKey.ts";
 
 const openaiUrl = ref("")
-const openaiKeys = ref<{val:string}[]>([])
-
-const initData = ()=>{
-  getOptionByKey({key:"openai_url"}).then(u=>{
+const openaiSysPrompt = ref("")
+const openaiKeys = ref<OpenaiKey[]>([])
+const initData = () => {
+  getOptionByKey({key: "openai_url"}).then(u => {
     openaiUrl.value = u.OptionValue
   })
-  getOptionByKey({key:"openai_keys"}).then(r=>{
-    try {
-      if (r.OptionValue == ""){
-        return
-      }
-      let keys = JSON.parse(r.OptionValue) || [] as string[]
-      openaiKeys.value = []
-      keys.forEach(val=>{
-        openaiKeys.value.push({val})
-      })
-
-    }catch (e) {
-      ElMessage.warning(JSON.stringify(e))
-    }
+  getOptionByKey({key: "openai_sys_prompt"}).then(r => {
+    openaiSysPrompt.value = r.OptionValue
+  })
+  getOpenaiKey().then(k => {
+    openaiKeys.value = k
   })
 }
 initData()
 
-const deleteRow = index=>{
-  if(openaiKeys.value.length ===1){
+const deleteRow = id => {
+
+  if (openaiKeys.value.length === 1) {
     ElMessage.warning("最少保留一个key")
     return
   }
-  let keys:string[] = []
-  openaiKeys.value.forEach((v,i)=>{
-    if(i!==index){
-      keys.push(v.val)
-    }
-  })
-  setOptionByKey({key:"openai_keys",val:JSON.stringify(keys)}).then(()=>{
+
+  destroy({id}).then(()=>{
     initData()
   })
+}
+const testRow = r=>{
+  ElMessage.warning("开发中")
 }
 
 const addKey = () => {
@@ -49,16 +40,16 @@ const addKey = () => {
     confirmButtonText: 'OK',
     cancelButtonText: 'Cancel',
   }).then(({value}) => {
-    if(value==""){
+    if (value == "") {
       ElMessage.warning("请输入key")
       return
     }
-    let val = JSON.stringify([...openaiKeys.value.map(v=>v.val),value])
-    setOptionByKey({key:"openai_keys",val}).then(()=>{
+    add({Value:value}).then(()=>{
       ElMessage.success("添加key成功")
       initData()
     })
-  }).catch(() => {})
+  }).catch(() => {
+  })
 }
 
 
@@ -66,19 +57,37 @@ const editUrl = () => {
   ElMessageBox.prompt('编辑代理地址', '提示', {
     confirmButtonText: 'OK',
     cancelButtonText: 'Cancel',
-    inputValue:openaiUrl.value
+    inputValue: openaiUrl.value
   }).then(({value}) => {
-    if(value==""){
+    if (value == "") {
       ElMessage.warning("请输入url")
       return
     }
-    setOptionByKey({key:"openai_url",val:value}).then(()=>{
+    setOptionByKey({key: "openai_url", val: value}).then(() => {
       ElMessage.success("设置成功")
       initData()
     })
-  }).catch(() => {})
+  }).catch(() => {
+  })
 }
-
+const editPrompt = () => {
+  ElMessageBox.prompt('编辑系统提示词', '提示', {
+    confirmButtonText: 'OK',
+    cancelButtonText: 'Cancel',
+    inputType: "textarea",
+    inputValue: openaiSysPrompt.value
+  }).then(({value}) => {
+    if (value == "") {
+      ElMessage.warning("请输入提示词")
+      return
+    }
+    setOptionByKey({key: "openai_sys_prompt", val: value}).then(() => {
+      ElMessage.success("设置成功")
+      initData()
+    })
+  }).catch(() => {
+  })
+}
 
 </script>
 
@@ -95,27 +104,50 @@ const editUrl = () => {
     <div>
       <div>
         <el-divider>请求或代理地址</el-divider>
-        <div style="display: flex;align-items: center;justify-content: space-between">
-          <p>{{openaiUrl}}</p>
-          <el-button  type="warning" @click.prevent="editUrl()">
+        <div style="display: flex;align-items: center;justify-content: space-between;padding: 20px">
+          <p>{{ openaiUrl }}</p>
+          <el-button type="warning" @click.prevent="editUrl()">
             编辑
           </el-button>
         </div>
-        <el-divider style="margin-top: 50px">Openai Keys</el-divider>
-
-        <el-button  type="success" @click.prevent="addKey()">
-          添加
-        </el-button>
-        <el-table :data="openaiKeys" style="width: 100%">
-          <el-table-column prop="val" label="值" />
-          <el-table-column prop="address" label="操作">
-            <template #default="s">
-              <el-button  type="danger" @click.prevent="deleteRow(s.$index)">
-                删除
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+        <el-divider>Openai SysPrompt</el-divider>
+        <div style="display: flex;align-items: center;justify-content: space-between;padding: 20px">
+          <div style="max-width: 80%;font-size: 13px;">{{ openaiSysPrompt }}</div>
+          <el-button type="warning" @click.prevent="editPrompt()">
+            编辑
+          </el-button>
+        </div>
+        <el-divider>Openai Key池</el-divider>
+        <div style="padding: 20px">
+          <el-button type="success" @click.prevent="addKey()">
+            添加
+          </el-button>
+          <el-table :data="openaiKeys" style="width: 100%">
+            <el-table-column width="50" prop="ID" label="ID"/>
+            <el-table-column prop="isCardBound" label="是否绑卡"/>
+            <el-table-column prop="ExpirationTime" label="过期时间"/>
+            <el-table-column prop="Value" label="值"/>
+            <el-table-column prop="Status" label="状态">
+              <template #default="s">
+                <div style="padding: 10px">
+                  <el-badge is-dot :type="s.row.Status==1?'success':'danger'">
+                    {{ s.row.Status==1?'正常':'异常' }}
+                  </el-badge>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="address" label="操作">
+              <template #default="s">
+                <el-button type="danger" @click.prevent="deleteRow(s.row.ID)">
+                  删除
+                </el-button>
+                <el-button type="primary" @click.prevent="testRow(s.row)">
+                  测试
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
       </div>
     </div>
   </el-card>

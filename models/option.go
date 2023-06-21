@@ -6,7 +6,7 @@ import (
 )
 
 const OptionKeyOpenaiUrl = "openai_url"
-const OptionKeyOpenaiKeys = "openai_keys"
+const OptionKeyOpenaiSysPrompt = "openai_sys_prompt"
 
 type Option struct {
 	gorm.Model
@@ -18,34 +18,30 @@ func InitOpenaiOption() error {
 
 	err := global.DB.Where("option_key = ?", OptionKeyOpenaiUrl).First(&Option{}).Error
 
-	if err != gorm.ErrRecordNotFound {
-		return err
+	if err == gorm.ErrRecordNotFound {
+		openaiUrl := Option{
+			OptionKey:   OptionKeyOpenaiUrl,
+			OptionValue: "https://api.openai.com/v1",
+		}
+		global.DB.Error = nil
+		err = global.DB.Save(&openaiUrl).Error
+		if err != nil {
+			return err
+		}
 	}
 
-	global.DB.Error = nil
+	err = global.DB.Where("option_key = ?", OptionKeyOpenaiSysPrompt).First(&Option{}).Error
 
-	openaiUrl := Option{
-		OptionKey:   OptionKeyOpenaiUrl,
-		OptionValue: "https://api.openai.com/v1",
-	}
-	err = global.DB.Save(&openaiUrl).Error
-	if err != nil {
-		return err
-	}
-
-	err = global.DB.Where("option_key = ?", OptionKeyOpenaiKeys).First(&Option{}).Error
-
-	if err != gorm.ErrRecordNotFound {
-		return err
-	}
-
-	openaiKeys := Option{
-		OptionKey:   OptionKeyOpenaiKeys,
-		OptionValue: "",
-	}
-	err = global.DB.Save(&openaiKeys).Error
-	if err != nil {
-		return err
+	if err == gorm.ErrRecordNotFound {
+		openaiKeys := Option{
+			OptionKey:   OptionKeyOpenaiSysPrompt,
+			OptionValue: "你是一款智能ai助手，你的名字叫 'ai小护',专为护士提供各种问题的解答。",
+		}
+		global.DB.Error = nil
+		err = global.DB.Save(&openaiKeys).Error
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

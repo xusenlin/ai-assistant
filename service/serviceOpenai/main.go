@@ -1,31 +1,24 @@
 package serviceOpenai
 
 import (
-	"encoding/json"
 	"errors"
 	"github.com/sashabaranov/go-openai"
 	"go-admin/global"
 	"go-admin/models"
 	"strings"
+	"time"
 )
 
 func NewOpenaiByOption() (*openai.Client, error) {
-	var optionKeys models.Option
-	err := global.DB.Where("option_key = ?", models.OptionKeyOpenaiKeys).First(&optionKeys).Error
-	if err != nil {
-		return nil, err
-	}
-	if len(optionKeys.OptionValue) == 0 {
-		return nil, errors.New("请联系管理员配置key")
-	}
+	var optionKeys []models.OpenaiKey
+	now := time.Now().UTC().Unix()
 
-	var openaiKeys []string
-	err = json.Unmarshal([]byte(optionKeys.OptionValue), &openaiKeys)
+	err := global.DB.Where("status = ? AND expiration_time > ?", models.StatusEnabled, now).Find(&optionKeys).Error
 	if err != nil {
 		return nil, err
 	}
-	if len(openaiKeys) == 0 {
-		return nil, errors.New("请联系管理员配置key")
+	if len(optionKeys) == 0 {
+		return nil, errors.New("已经没有可用的key,请联系管理员配置")
 	}
 
 	var optionUrl models.Option
@@ -38,7 +31,7 @@ func NewOpenaiByOption() (*openai.Client, error) {
 		return nil, errors.New("请联系管理员配置正确的url")
 	}
 
-	config := openai.DefaultConfig(openaiKeys[0])
+	config := openai.DefaultConfig(optionKeys[0].Value)
 	config.BaseURL = optionUrl.OptionValue
 
 	client := openai.NewClientWithConfig(config)

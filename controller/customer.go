@@ -7,6 +7,7 @@ import (
 	"github.com/pkoukk/tiktoken-go"
 	"github.com/sashabaranov/go-openai"
 	"go-admin/global"
+	"go-admin/models"
 	"go-admin/service/serviceOpenai"
 	"go-admin/service/serviceUser"
 	"io"
@@ -49,6 +50,19 @@ func GPT3Dot5Turbo(c *gin.Context) {
 		c.String(http.StatusBadRequest, openaiErr.Error())
 		return
 	}
+
+	var prompt models.Option
+	if err := global.DB.Where("option_key = ?", models.OptionKeyOpenaiSysPrompt).First(&prompt).Error; err != nil {
+		c.String(http.StatusBadRequest, err.Error())
+	}
+	if prompt.OptionValue != "" {
+		systemPrompt := openai.ChatCompletionMessage{
+			Role:    "system",
+			Content: prompt.OptionValue,
+		}
+		chat = append([]openai.ChatCompletionMessage{systemPrompt}, chat...)
+	}
+
 	stream, clientErr := client.CreateChatCompletionStream(c, openai.ChatCompletionRequest{
 		Model:     openai.GPT3Dot5Turbo,
 		MaxTokens: 2000,
