@@ -4,66 +4,59 @@ import DialogContent from "./components/DialogContent.vue"
 import UserMenu from "./components/UserMenu.vue"
 </script>
 <template>
-  <el-container class="app">
-    <el-header>
-      <div class="container head">
-        <div style="display:flex;flex: 1">
-          <div class="title">
-            Ai 助手
-          </div>
-        </div>
+  <div class="app">
+    <div class="slider">
+      <div class="user">
         <UserMenu/>
       </div>
-    </el-header>
-    <el-main>
-      <div class="container">
-        <DialogContent/>
+    </div>
+    <div class="main">
+      <div class="top">
+        <UserMenu/>
       </div>
-    </el-main>
+      <DialogContent/>
+    </div>
     <Login/>
-  </el-container>
+  </div>
+
 </template>
 
 <style  lang="scss">
-
-.container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-.el-tabs__nav-wrap::after{
-  height: 0;
-  background: none;
-}
-
-.el-tabs__item{
-  height: 46px;
-}
-.el-main{
-  padding: 0;
-}
-.el-header{
-  padding: 0;
-}
-.head {
-  height: 50px;
+.app{
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: solid 1px #e4e7ed;
-  color: #606266;
-}
-.menu{
-  margin-left: 30px;flex: 1;
-  display: flex;
-  align-items: flex-end;
-}
+  .slider{
+    width: 260px;
+    height: 100vh;
+    background: #202123;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0.5em;
+    color: #fff;
+    .user{
+      border-top:1px solid rgb(255 255 255 / 20%);
+      padding-top: 10px;
+    }
+  }
 
-.footer {
-  width: 100%;
-  text-align: center;
-  color: #aa0000;
-  font-size: 12px
+  .main{
+    flex: 1;
+    background: #f7f7f8;
+
+    .top{
+      display: none;
+    }
+  }
+  @media only screen and (max-width: 720px) {
+    .slider {
+      display: none;
+    }
+    .main .top{
+      display: block;
+      color: #fff;
+      background: #202123;
+    }
+  }
 }
 
 </style>

@@ -13,7 +13,6 @@ export const useUserStore = defineStore("user", {
     token: (state) => state.info.Token,
     userName: (state) => state.info.Username,
     remainingDialogueCount: (state) => state.info.RemainingDialogueCount,
-    tokenConsumed: (state) => state.info.TokenConsumed,
   },
   actions: {
     updateUserInfo(user) {
@@ -23,6 +22,7 @@ export const useUserStore = defineStore("user", {
     },
     decrementDialogueCount(){
       this.info.RemainingDialogueCount = this.info.RemainingDialogueCount - 1
+      storage.set(storageKeyUser, this.info)
     },
     loginOut(){
       storage.remove(storageKeyUser)

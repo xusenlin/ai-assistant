@@ -115,10 +115,10 @@ const sendQuestion = async () => {
     <el-card v-for="(n,i) in chat" class="box-card" shadow="never">
       <template #header>
         <div class="card-header">
-          <span>{{ n.role.charAt(0).toUpperCase() + n.role.slice(1) }}</span>
-          <el-button link type="warning" @click="chat.splice(i,1)">
-            Remove
-          </el-button>
+          <span>{{ n.role==="user"?"我":"AI助手" }}</span>
+<!--          <el-button link type="warning" @click="chat.splice(i,1)">-->
+<!--            Remove-->
+<!--          </el-button>-->
         </div>
       </template>
       <div class="dialog-msg" v-if="n.role == 'assistant'" v-html="markedParse(n.content)"></div>
@@ -127,7 +127,7 @@ const sendQuestion = async () => {
     <el-card class="box-card mt" shadow="never">
       <template #header>
         <div class="card-header">
-          <span>Question</span>
+          <span>提问</span>
 <!--          <el-button type="success" link>-->
 <!--            Prompts-->
 <!--          </el-button>-->
@@ -138,7 +138,7 @@ const sendQuestion = async () => {
             v-model="question"
             :rows="3"
             type="textarea"
-            placeholder="Please input question"
+            placeholder="提问"
         />
 
       </div>
