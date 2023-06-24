@@ -10,7 +10,7 @@ export default function () {
     })
 
     const setTableData = (r:any) :void => {
-        if(Array.isArray(r.List) && r.List.length!==0){
+        if(Array.isArray(r.List)){
             tableData.value = r.List||[]
         }
     }

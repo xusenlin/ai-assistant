@@ -18,7 +18,7 @@ type SensitiveWord struct {
 }
 
 func (s *SensitiveWord) Destroy(id string) (err error) {
-	return global.DB.Where("id = ?", id).Delete(&s).Error
+	return global.DB.First(s, id).Delete(&s).Error
 }
 
 func (s *SensitiveWord) Add(word string) error {
