@@ -6,7 +6,7 @@
         <el-button type="success" @click="clickMigrate()">敏感词迁移</el-button>
       </template>
       <template #right>
-<!--        <el-input v-model="searchParams.id" placeholder="请输入ID"  clearable />-->
+        <el-input v-model="searchParams.keyword" placeholder="请输入关键词"  clearable />
       </template>
     </ActionBar>
     <el-table :data="tableData" style="width: 100%" max-height="calc(100vh - 267px)">

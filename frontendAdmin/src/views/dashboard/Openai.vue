@@ -2,7 +2,7 @@
 import {ref} from 'vue'
 import {getOptionByKey, setOptionByKey} from "@/api/option.ts"
 import {ElMessage, ElMessageBox} from "element-plus";
-import {getOpenaiKey,add,destroy, OpenaiKey} from "@/api/demo/openaiKey.ts";
+import {getOpenaiKey,add,destroy,ping, OpenaiKey} from "@/api/openaiKey.ts";
 
 const openaiUrl = ref("")
 const openaiSysPrompt = ref("")
@@ -31,8 +31,11 @@ const deleteRow = id => {
     initData()
   })
 }
-const testRow = r=>{
-  ElMessage.warning("开发中")
+const testRow = key =>{
+  ping({key}).then(pong=>{
+    ElMessage.success(pong)
+    initData()
+  })
 }
 
 const addKey = () => {
@@ -124,8 +127,6 @@ const editPrompt = () => {
           </el-button>
           <el-table :data="openaiKeys" style="width: 100%">
             <el-table-column width="50" prop="ID" label="ID"/>
-            <el-table-column prop="isCardBound" label="是否绑卡"/>
-            <el-table-column prop="ExpirationTime" label="过期时间"/>
             <el-table-column prop="Value" label="值"/>
             <el-table-column prop="Status" label="状态">
               <template #default="s">
@@ -136,12 +137,13 @@ const editPrompt = () => {
                 </div>
               </template>
             </el-table-column>
+            <el-table-column prop="ExceptionReason" label="异常信息"/>
             <el-table-column prop="address" label="操作">
               <template #default="s">
                 <el-button type="danger" @click.prevent="deleteRow(s.row.ID)">
                   删除
                 </el-button>
-                <el-button type="primary" @click.prevent="testRow(s.row)">
+                <el-button type="primary" @click.prevent="testRow(s.row.Value)">
                   测试
                 </el-button>
               </template>

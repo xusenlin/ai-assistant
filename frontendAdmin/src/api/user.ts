@@ -19,11 +19,11 @@ export function login(data:any)  {
   })
 }
 
-export function userList(data:any)  {
+export function userList(params:any)  {
   return r.request<User[]>({
     url: '/v1/users/list',
     method: 'get',
-    data,
+    params,
   })
 }
 

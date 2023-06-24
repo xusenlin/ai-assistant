@@ -4,8 +4,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-admin/global"
 	"go-admin/models"
+	"go-admin/service/serviceOpenai"
 	"net/http"
-	"time"
 )
 
 func OpenaiKeyFindAll(c *gin.Context) {
@@ -19,12 +19,6 @@ func OpenaiKeyFindAll(c *gin.Context) {
 			"Msg":    err.Error(),
 		})
 		return
-	}
-
-	for i, k := range keys {
-		if k.ExpirationTime < time.Now().UTC().Unix() {
-			keys[i].Status = models.StatusDisabled
-		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -65,6 +59,16 @@ func OpenaiKeyAdd(c *gin.Context) {
 		})
 		return
 	}
+
+	_, err := serviceOpenai.Ping(c, key.Value)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"Status": false,
+			"Data":   "",
+			"Msg":    err.Error(),
+		})
+		return
+	}
 	if err := key.Save(); err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"Status": false,
@@ -78,4 +82,51 @@ func OpenaiKeyAdd(c *gin.Context) {
 		"Data":   "",
 		"Msg":    "success",
 	})
+}
+
+func OpenaiKeyPing(c *gin.Context) {
+	key := c.Query("key")
+	if key == "" {
+		c.JSON(http.StatusOK, gin.H{
+			"Status": false,
+			"Data":   "",
+			"Msg":    "查询的key不能为空",
+		})
+		return
+	}
+
+	var openaiKey models.OpenaiKey
+
+	if err := global.DB.Where("value = ?", key).First(&openaiKey).Error; err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"Status": false,
+			"Data":   "",
+			"Msg":    err.Error(),
+		})
+		return
+	}
+
+	test, err := serviceOpenai.Ping(c, openaiKey.Value)
+
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"Status": false,
+			"Data":   "",
+			"Msg":    err.Error(),
+		})
+		openaiKey.Status = models.StatusDisabled
+		openaiKey.ExceptionReason = err.Error()
+		global.DB.Save(openaiKey)
+		return
+	}
+
+	openaiKey.Status = models.StatusEnabled
+	global.DB.Save(openaiKey)
+
+	c.JSON(http.StatusOK, gin.H{
+		"Status": true,
+		"Data":   test,
+		"Msg":    "success",
+	})
+
 }

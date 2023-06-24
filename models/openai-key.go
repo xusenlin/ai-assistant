@@ -3,15 +3,13 @@ package models
 import (
 	"go-admin/global"
 	"gorm.io/gorm"
-	"time"
 )
 
 type OpenaiKey struct {
 	gorm.Model
-	Value          string `binding:"required,min=20,max=88"`
-	isCardBound    bool
-	ExpirationTime int64
-	Status         int `gorm:"default:1"`
+	Value           string `binding:"required,min=20,max=88"`
+	ExceptionReason string `gorm:"type:varchar(1000);comment:异常原因"`
+	Status          int    `gorm:"default:1"`
 }
 
 func (o *OpenaiKey) Destroy(id string) (err error) {
@@ -19,7 +17,5 @@ func (o *OpenaiKey) Destroy(id string) (err error) {
 }
 
 func (o *OpenaiKey) Save() (err error) {
-	//TODO
-	o.ExpirationTime = time.Now().AddDate(0, 0, 100).Unix()
 	return global.DB.Save(&o).Error
 }

@@ -96,7 +96,7 @@ func UsersFind(c *gin.Context) {
 		pageSize = 20
 	}
 
-	keyword := c.Query("name")
+	keyword := c.Query("keyword")
 
 	db := global.DB.Model(&models.User{}).Order("created_at asc")
 

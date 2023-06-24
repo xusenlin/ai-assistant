@@ -45,12 +45,6 @@ func GPT3Dot5Turbo(c *gin.Context) {
 		return
 	}
 
-	client, openaiErr := serviceOpenai.NewOpenaiByOption()
-	if openaiErr != nil {
-		c.String(http.StatusBadRequest, openaiErr.Error())
-		return
-	}
-
 	var prompt models.Option
 	if err := global.DB.Where("option_key = ?", models.OptionKeyOpenaiSysPrompt).First(&prompt).Error; err != nil {
 		c.String(http.StatusBadRequest, err.Error())
@@ -63,6 +57,13 @@ func GPT3Dot5Turbo(c *gin.Context) {
 		chat = append([]openai.ChatCompletionMessage{systemPrompt}, chat...)
 	}
 
+RetryCount:
+	client, key, openaiErr := serviceOpenai.NewOpenaiByOption()
+	if openaiErr != nil {
+		c.String(http.StatusBadRequest, openaiErr.Error())
+		return
+	}
+
 	stream, clientErr := client.CreateChatCompletionStream(c, openai.ChatCompletionRequest{
 		Model:     openai.GPT3Dot5Turbo,
 		MaxTokens: 2000,
@@ -70,8 +71,16 @@ func GPT3Dot5Turbo(c *gin.Context) {
 		Messages:  chat,
 	})
 	if clientErr != nil {
-		c.String(http.StatusBadRequest, clientErr.Error())
-		return
+
+		key.Status = models.StatusDisabled
+		key.ExceptionReason = clientErr.Error()
+		if err := global.DB.Save(key).Error; err != nil {
+			c.String(http.StatusBadRequest, err.Error())
+			return
+		}
+
+		goto RetryCount
+
 	}
 	defer stream.Close()
 	var lastAnswer = ""

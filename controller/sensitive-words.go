@@ -18,9 +18,17 @@ func SensitiveWordsList(c *gin.Context) {
 	if err2 != nil {
 		pageSize = 20
 	}
+
+	keyword := c.Query("keyword")
+
 	var sensitiveWords []models.SensitiveWord
 
 	db := global.DB.Model(&models.SensitiveWord{}).Order("created_at desc")
+
+	if keyword != "" {
+		db.Where("name LIKE ?", "%"+keyword+"%")
+	}
+
 	r, perr := models.Paginate(db, pageNum, pageSize, &sensitiveWords)
 	if perr != nil {
 		c.JSON(http.StatusOK, gin.H{

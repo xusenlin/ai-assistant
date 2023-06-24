@@ -32,3 +32,10 @@ export function add(data:{Value:string}) {
         data,
     })
 }
+export function ping(params:{key:string}) {
+    return r.request<string>({
+        url: '/v1/openai/key/ping',
+        method: 'get',
+        params,
+    })
+}
