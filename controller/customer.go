@@ -22,7 +22,7 @@ func GPT3Dot5Turbo(c *gin.Context) {
 		return
 	}
 	chatLen := len(chat)
-	if chatLen == 0 {
+	if chatLen == 0 { //TODO 对话次数限制
 		c.String(http.StatusBadRequest, "没有对话内容")
 		return
 	}
@@ -51,7 +51,7 @@ func GPT3Dot5Turbo(c *gin.Context) {
 	}
 	if prompt.OptionValue != "" {
 		systemPrompt := openai.ChatCompletionMessage{
-			Role:    "system",
+			Role:    openai.ChatMessageRoleSystem,
 			Content: prompt.OptionValue,
 		}
 		chat = append([]openai.ChatCompletionMessage{systemPrompt}, chat...)
@@ -65,8 +65,8 @@ RetryCount:
 	}
 
 	stream, clientErr := client.CreateChatCompletionStream(c, openai.ChatCompletionRequest{
-		Model:     openai.GPT3Dot5Turbo,
-		MaxTokens: 2000,
+		Model:     openai.GPT3Dot5Turbo16K,
+		MaxTokens: 2048,
 		Stream:    true,
 		Messages:  chat,
 	})
