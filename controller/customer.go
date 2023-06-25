@@ -22,8 +22,12 @@ func GPT3Dot5Turbo(c *gin.Context) {
 		return
 	}
 	chatLen := len(chat)
-	if chatLen == 0 { //TODO 对话次数限制
+	if chatLen == 0 {
 		c.String(http.StatusBadRequest, "没有对话内容")
+		return
+	}
+	if chatLen > 10 {
+		c.String(http.StatusBadRequest, "对话已经超出限制")
 		return
 	}
 
