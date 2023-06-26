@@ -109,18 +109,21 @@ func OpenaiKeyPing(c *gin.Context) {
 	test, err := service.OpenaiPing(c, openaiKey.Value)
 
 	if err != nil {
+
+		openaiKey.Status = models.StatusDisabled
+		openaiKey.ExceptionReason = err.Error()
+		global.DB.Save(openaiKey)
+
 		c.JSON(http.StatusOK, gin.H{
 			"Status": false,
 			"Data":   "",
 			"Msg":    err.Error(),
 		})
-		openaiKey.Status = models.StatusDisabled
-		openaiKey.ExceptionReason = err.Error()
-		global.DB.Save(openaiKey)
 		return
 	}
 
 	openaiKey.Status = models.StatusEnabled
+	openaiKey.ExceptionReason = ""
 	global.DB.Save(openaiKey)
 
 	c.JSON(http.StatusOK, gin.H{

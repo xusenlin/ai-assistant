@@ -42,7 +42,8 @@ import UserMenu from "./components/UserMenu.vue"
   .main{
     flex: 1;
     background: #f7f7f8;
-
+    height: 100vh;
+    overflow-y: auto;
     .top{
       display: none;
     }

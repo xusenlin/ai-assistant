@@ -91,7 +91,8 @@ RetryCount:
 	defer stream.Close()
 	var lastAnswer = ""
 	defer func() {
-		_ = service.OpenaiUpdateUserUsage(user, lastAnswer)
+		service.OpenaiUpdateUserUsage(user, lastAnswer)
+		service.DialogAddRecord(c, lastQuestion, lastAnswer)
 	}()
 
 	for {

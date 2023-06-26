@@ -66,6 +66,10 @@ func InitRouter() *gin.Engine {
 	}
 
 	r.POST("/api/openai/GPT3Dot5Turbo", middlewares.CustomerAuth(false), controller.GPT3Dot5Turbo)
+	api := r.Group("/api").Use(middlewares.CustomerAuth(true))
+	{
+		api.POST("/user/updatePwd", controller.CustomerUpdatePassword)
+	}
 
 	return r
 }

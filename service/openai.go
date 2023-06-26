@@ -62,7 +62,7 @@ func OpenaiPing(c *gin.Context, key string) (string, error) {
 	return resp.Choices[0].Message.Content, nil
 }
 
-func OpenaiUpdateUserUsage(u *models.User, answer string) error {
+func OpenaiUpdateUserUsage(u *models.User, answer string) {
 	token := 0
 	tkm, err := tiktoken.EncodingForModel("gpt-3.5-turbo")
 	if err == nil {
@@ -70,5 +70,5 @@ func OpenaiUpdateUserUsage(u *models.User, answer string) error {
 	}
 	u.RemainingDialogueCount = u.RemainingDialogueCount - 1
 	u.TokenConsumed = u.TokenConsumed + token
-	return global.DB.Save(u).Error
+	global.DB.Save(u)
 }

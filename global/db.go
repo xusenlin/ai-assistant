@@ -9,6 +9,8 @@ import (
 
 var DB *gorm.DB
 
+var DBRecord *gorm.DB
+
 func InitDb() {
 	var err error
 
@@ -22,4 +24,11 @@ func InitDb() {
 		fmt.Println(err)
 		panic("failed to connect database")
 	}
+	DBRecord, err = gorm.Open(sqlite.Open("record.db"), &gorm.Config{})
+
+	if err != nil {
+		fmt.Println(err)
+		panic("failed to connect database")
+	}
+
 }

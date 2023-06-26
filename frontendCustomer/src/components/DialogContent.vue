@@ -111,7 +111,7 @@ const sendQuestion = async () => {
 </script>
 
 <template>
-  <div>
+  <div style="padding: 12px">
     <el-card v-for="(n,i) in chat" class="box-card" shadow="never">
       <template #header>
         <div class="card-header">
