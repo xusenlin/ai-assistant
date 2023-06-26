@@ -12,11 +12,12 @@ func DialogAddRecord(c *gin.Context, question, answer string) {
 	if err != nil {
 		return
 	}
+
 	var dialog = models.Dialog{
 		Username:    user.Username,
 		Question:    question,
 		Response:    answer,
-		UserIP:      c.Request.RemoteAddr,
+		UserIP:      c.ClientIP(),
 		BrowserInfo: c.Request.UserAgent(),
 	}
 	err = global.DBRecord.Save(&dialog).Error
