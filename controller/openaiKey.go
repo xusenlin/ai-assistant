@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-admin/global"
 	"go-admin/models"
-	"go-admin/service/serviceOpenai"
+	"go-admin/service"
 	"net/http"
 )
 
@@ -60,7 +60,7 @@ func OpenaiKeyAdd(c *gin.Context) {
 		return
 	}
 
-	_, err := serviceOpenai.Ping(c, key.Value)
+	_, err := service.OpenaiPing(c, key.Value)
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"Status": false,
@@ -106,7 +106,7 @@ func OpenaiKeyPing(c *gin.Context) {
 		return
 	}
 
-	test, err := serviceOpenai.Ping(c, openaiKey.Value)
+	test, err := service.OpenaiPing(c, openaiKey.Value)
 
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{

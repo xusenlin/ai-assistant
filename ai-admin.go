@@ -5,7 +5,7 @@ import (
 	"go-admin/global"
 	"go-admin/models"
 	"go-admin/routes"
-	"go-admin/service/serviceSensitiveWord"
+	"go-admin/service"
 )
 
 func main() {
@@ -18,13 +18,13 @@ func main() {
 		panic(err)
 	}
 
-	err = models.InitOpenaiOption()
+	err = service.OptionInitOpenai()
 	if err != nil {
 		panic(err)
 	}
 
 	global.InitSensitiveWords()
-	err = serviceSensitiveWord.ResetAllWord()
+	err = service.SensitiveWordReset()
 	if err != nil {
 		panic(err)
 	}

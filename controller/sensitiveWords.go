@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-admin/global"
 	"go-admin/models"
-	"go-admin/service/serviceSensitiveWord"
+	"go-admin/service"
 	"net/http"
 	"strconv"
 )
@@ -49,7 +49,7 @@ func SensitiveWordsList(c *gin.Context) {
 }
 
 func SensitiveWordsMigrate(c *gin.Context) {
-	if err := serviceSensitiveWord.Migrate(); err != nil {
+	if err := service.SensitiveWordMigrate(); err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"Status": false,
 			"Data":   "",
@@ -58,7 +58,7 @@ func SensitiveWordsMigrate(c *gin.Context) {
 		return
 	}
 
-	if err := serviceSensitiveWord.ResetAllWord(); err != nil {
+	if err := service.SensitiveWordReset(); err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"Status": false,
 			"Data":   "",

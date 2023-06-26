@@ -1,4 +1,4 @@
-package serviceSensitiveWord
+package service
 
 import (
 	"bufio"
@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func FindAll() ([]models.SensitiveWord, error) {
+func SensitiveWordFind() ([]models.SensitiveWord, error) {
 	var sensitiveWords []models.SensitiveWord
 	err := global.DB.Where("status = ?", models.StatusEnabled).Find(&sensitiveWords).Error
 	if err != nil {
@@ -19,22 +19,22 @@ func FindAll() ([]models.SensitiveWord, error) {
 	return sensitiveWords, nil
 }
 
-func ResetAllWord() error {
-	words, err := FindAll()
+func SensitiveWordReset() error {
+	words, err := SensitiveWordFind()
 
 	if err != nil {
 		return err
 	}
 
 	global.SensitiveWordsFilter = sensitive.New()
-	
+
 	for _, word := range words {
 		global.SensitiveWordsFilter.AddWord(word.Name)
 	}
 	return nil
 }
 
-func Migrate() error {
+func SensitiveWordMigrate() error {
 	var count int64
 
 	if err := global.DB.Model(&models.SensitiveWord{}).Count(&count).Error; err != nil {

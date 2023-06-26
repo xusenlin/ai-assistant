@@ -5,7 +5,7 @@ import (
 	"go-admin/global"
 	"go-admin/helper"
 	"go-admin/models"
-	"go-admin/service/serviceUser"
+	"go-admin/service"
 	"net/http"
 	"strconv"
 	"strings"
@@ -59,7 +59,7 @@ func UserLogin(c *gin.Context) {
 		})
 		return
 	}
-	token, err := serviceUser.GenToken(&models.Claims{
+	token, err := service.JwtGenToken(&models.Claims{
 		ID:       user.ID,
 		Username: user.Username,
 		Status:   user.Status,

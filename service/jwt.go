@@ -1,4 +1,4 @@
-package serviceUser
+package service
 
 import (
 	"errors"
@@ -10,7 +10,7 @@ import (
 )
 
 // GenToken 生成JWT
-func GenToken(claims *models.Claims) (string, error) {
+func JwtGenToken(claims *models.Claims) (string, error) {
 	claims.RegisteredClaims = jwt.RegisteredClaims{
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(models.TokenExpireDuration)), // 过期时间
 		Issuer:    "senLin",                                                       // 签发人
@@ -21,7 +21,7 @@ func GenToken(claims *models.Claims) (string, error) {
 	return token.SignedString(models.TokenSecret)
 }
 
-func ParseToken(tokenString string) (*models.Claims, error) {
+func JwtParseToken(tokenString string) (*models.Claims, error) {
 	// 解析token
 	token, err := jwt.ParseWithClaims(tokenString, &models.Claims{}, func(token *jwt.Token) (i interface{}, err error) {
 		return models.TokenSecret, nil
@@ -35,7 +35,7 @@ func ParseToken(tokenString string) (*models.Claims, error) {
 	return nil, errors.New("Token 无效，请重新登录")
 }
 
-func GetJwtClaimsByContext(c *gin.Context) (*models.Claims, error) {
+func JwtGetClaimsByContext(c *gin.Context) (*models.Claims, error) {
 
 	jwtClaims, hasClaims := c.Get(models.JwtClaimsKey)
 	if !hasClaims {
@@ -49,8 +49,8 @@ func GetJwtClaimsByContext(c *gin.Context) (*models.Claims, error) {
 	return claims, nil
 }
 
-func GetUserByContext(c *gin.Context) (*models.User, error) {
-	claims, err := GetJwtClaimsByContext(c)
+func JwtGetUserByContext(c *gin.Context) (*models.User, error) {
+	claims, err := JwtGetClaimsByContext(c)
 	if err != nil {
 		return nil, err
 	}

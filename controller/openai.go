@@ -4,12 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/pkoukk/tiktoken-go"
 	"github.com/sashabaranov/go-openai"
 	"go-admin/global"
 	"go-admin/models"
-	"go-admin/service/serviceOpenai"
-	"go-admin/service/serviceUser"
+	"go-admin/service"
 	"io"
 	"net/http"
 	"strings"
@@ -41,7 +39,7 @@ func GPT3Dot5Turbo(c *gin.Context) {
 		return
 	}
 
-	user, err := serviceUser.GetUserByContext(c)
+	user, err := service.JwtGetUserByContext(c)
 	if err != nil {
 		c.String(http.StatusBadRequest, err.Error())
 		return
@@ -51,20 +49,17 @@ func GPT3Dot5Turbo(c *gin.Context) {
 		return
 	}
 
-	var prompt models.Option
-	if err := global.DB.Where("option_key = ?", models.OptionKeyOpenaiSysPrompt).First(&prompt).Error; err != nil {
-		c.String(http.StatusBadRequest, err.Error())
-	}
-	if prompt.OptionValue != "" {
+	sysPrompt := service.OptionGetValue(models.OptionKeyOpenaiSysPrompt)
+	if sysPrompt != "" {
 		systemPrompt := openai.ChatCompletionMessage{
 			Role:    openai.ChatMessageRoleSystem,
-			Content: prompt.OptionValue,
+			Content: sysPrompt,
 		}
 		chat = append([]openai.ChatCompletionMessage{systemPrompt}, chat...)
 	}
 
 RetryCount:
-	client, key, openaiErr := serviceOpenai.NewOpenaiByOption()
+	client, key, openaiErr := service.OpenaiNewClient()
 	if openaiErr != nil {
 		c.String(http.StatusBadRequest, openaiErr.Error())
 		return
@@ -96,14 +91,7 @@ RetryCount:
 	defer stream.Close()
 	var lastAnswer = ""
 	defer func() {
-		token := 0
-		tkm, err := tiktoken.EncodingForModel("gpt-3.5-turbo")
-		if err == nil {
-			token = len(tkm.Encode(lastAnswer, nil, nil))
-		}
-		user.RemainingDialogueCount = user.RemainingDialogueCount - 1
-		user.TokenConsumed = user.TokenConsumed + token
-		global.DB.Save(user)
+		_ = service.OpenaiUpdateUserUsage(user, lastAnswer)
 	}()
 
 	for {

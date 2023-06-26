@@ -3,7 +3,7 @@ package middlewares
 import (
 	"github.com/gin-gonic/gin"
 	"go-admin/models"
-	"go-admin/service/serviceUser"
+	"go-admin/service"
 	"net/http"
 )
 
@@ -19,7 +19,7 @@ func AdminAuth() func(c *gin.Context) {
 			c.Abort()
 			return
 		}
-		claims, err := serviceUser.ParseToken(token)
+		claims, err := service.JwtParseToken(token)
 		if err != nil {
 			c.JSON(http.StatusOK, gin.H{
 				"Status": false,
@@ -71,7 +71,7 @@ func CustomerAuth(responseJson bool) func(c *gin.Context) {
 			c.Abort()
 			return
 		}
-		claims, err := serviceUser.ParseToken(token)
+		claims, err := service.JwtParseToken(token)
 		if err != nil {
 			if responseJson {
 				c.JSON(http.StatusOK, gin.H{

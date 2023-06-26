@@ -1,15 +1,16 @@
-package serviceOpenai
+package service
 
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/pkoukk/tiktoken-go"
 	"github.com/sashabaranov/go-openai"
 	"go-admin/global"
 	"go-admin/models"
 	"strings"
 )
 
-func NewOpenaiByOption() (*openai.Client, *models.OpenaiKey, error) {
+func OpenaiNewClient() (*openai.Client, *models.OpenaiKey, error) {
 	var optionKeys []models.OpenaiKey
 
 	err := global.DB.Where("status = ?", models.StatusEnabled).Find(&optionKeys).Error
@@ -39,7 +40,7 @@ func NewOpenaiByOption() (*openai.Client, *models.OpenaiKey, error) {
 
 }
 
-func Ping(c *gin.Context, key string) (string, error) {
+func OpenaiPing(c *gin.Context, key string) (string, error) {
 	client := openai.NewClient(key)
 	resp, err := client.CreateChatCompletion(
 		c,
@@ -59,4 +60,15 @@ func Ping(c *gin.Context, key string) (string, error) {
 	}
 
 	return resp.Choices[0].Message.Content, nil
+}
+
+func OpenaiUpdateUserUsage(u *models.User, answer string) error {
+	token := 0
+	tkm, err := tiktoken.EncodingForModel("gpt-3.5-turbo")
+	if err == nil {
+		token = len(tkm.Encode(answer, nil, nil))
+	}
+	u.RemainingDialogueCount = u.RemainingDialogueCount - 1
+	u.TokenConsumed = u.TokenConsumed + token
+	return global.DB.Save(u).Error
 }
