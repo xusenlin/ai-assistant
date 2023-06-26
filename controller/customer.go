@@ -12,6 +12,7 @@ import (
 	"go-admin/service/serviceUser"
 	"io"
 	"net/http"
+	"strings"
 )
 
 func GPT3Dot5Turbo(c *gin.Context) {
@@ -26,10 +27,11 @@ func GPT3Dot5Turbo(c *gin.Context) {
 		c.String(http.StatusBadRequest, "没有对话内容")
 		return
 	}
-	if chatLen > 10 {
-		c.String(http.StatusBadRequest, "对话已经超出限制")
-		return
-	}
+
+	//if chatLen > 10 {
+	//	c.String(http.StatusBadRequest, "对话已经超出限制,请重置对话")
+	//	return
+	//}
 
 	lastQuestion := chat[chatLen-1].Content
 
@@ -75,6 +77,11 @@ RetryCount:
 		Messages:  chat,
 	})
 	if clientErr != nil {
+
+		if strings.Contains(clientErr.Error(), "Please reduce the length of the messages or completion") {
+			c.String(http.StatusBadRequest, "对话已经超出限制,请重置对话")
+			return
+		}
 
 		key.Status = models.StatusDisabled
 		key.ExceptionReason = clientErr.Error()
