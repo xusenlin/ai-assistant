@@ -1,11 +1,13 @@
 <script setup>
 import Login from "./components/Login.vue"
+import DialogList from "./components/DialogList.vue"
 import DialogContent from "./components/DialogContent.vue"
 import UserMenu from "./components/UserMenu.vue"
 </script>
 <template>
   <div class="app">
     <div class="slider">
+      <DialogList/>
       <div class="user">
         <UserMenu/>
       </div>
@@ -30,7 +32,7 @@ import UserMenu from "./components/UserMenu.vue"
     background: #202123;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: space-between;
     padding: 0.5em;
     color: #fff;
     .user{

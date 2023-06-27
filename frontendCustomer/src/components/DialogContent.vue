@@ -1,8 +1,9 @@
 <script setup>
-import {ref} from 'vue'
+import {ref,onMounted,watch,computed,nextTick} from 'vue'
 import {marked} from "marked"
 import {baseURL} from "../config/req.js"
 import { useUserStore } from "../stores/user.js"
+import { useAppStore } from "../stores/app.js"
 import { getUserToken } from "../stores/user.js"
 import hljs from "highlight.js/lib/core";
 import javascript from "highlight.js/lib/languages/javascript";
@@ -35,8 +36,9 @@ hljs.registerLanguage("swift",swift)
 
 
 
-const app = useUserStore()
-const chat = ref([])
+const user = useUserStore()
+const app = useAppStore()
+const chat = computed(() => app.dialog[app.dialogIndex]);
 const question = ref("")
 const answering = ref(false)
 
@@ -45,6 +47,8 @@ const markedParse = (t) => {
 }
 const sendQuestion = async () => {
   question.value = question.value.trim()
+  let dialog = app.dialog[app.dialogIndex]
+  let dialogId = dialog.id;
   if (question.value.length === 0) {
     ElNotification.warning({
       title: "提示",
@@ -57,7 +61,7 @@ const sendQuestion = async () => {
     const response = await fetch(baseURL + "/api/openai/GPT3Dot5Turbo", {
       method: 'post',
       headers: {'Content-Type': 'application/json','Authorization':getUserToken()},
-      body: JSON.stringify([...chat.value, {
+      body: JSON.stringify([...dialog.content, {
         role: "user",
         content: question.value
       }]),
@@ -66,15 +70,13 @@ const sendQuestion = async () => {
       const msg = await response.text()
       throw new Error(msg)
     }
-    app.decrementDialogueCount()
-
-    chat.value.push({
+    app.pushContent(dialogId,[{
       role: "user",
       content: question.value
     }, {
       role: "assistant",
       content: ""
-    })
+    }])
     question.value = ""
 
     const decoder = new TextDecoder('utf-8');
@@ -82,23 +84,13 @@ const sendQuestion = async () => {
     while (true) {
       const {value, done} = await reader.read();
       if (done) {
-        let msg = document.querySelectorAll('.dialog-msg')
-        let len = chat.value.length
-        if (msg.length !== len || msg.length === 0){
-          break
-        }
-        let pre = msg[len-1].querySelectorAll('pre')
-        if(pre.length ===0){
-          break
-        }
-        pre.forEach(el=>{
-          hljs.highlightElement(el);
-        })
+        highlightedCode()
         break
       }
-      chat.value[chat.value.length - 1].content += decoder.decode(value)
+      app.pushSetAnswer(dialogId,decoder.decode(value))
     }
     answering.value = false
+    await user.updateUserInfoByApi()
   } catch (e) {
     ElNotification.error({
       title: "错误",
@@ -108,46 +100,75 @@ const sendQuestion = async () => {
   }
 }
 
+
+const highlightedCode = (all=false) =>{
+  let msg = document.querySelectorAll('.dialog-msg')
+  let len = msg.length
+
+  let pre = all ? document.querySelectorAll('pre'):msg[len-1].querySelectorAll('pre')
+  if(pre.length ===0){
+    return
+  }
+  pre.forEach(el=>{
+    hljs.highlightElement(el);
+  })
+}
+
+onMounted(()=>{
+  highlightedCode(true)
+})
+watch(()=>app.dialogIndex,()=>{
+  nextTick(()=>{//更新成功并等待md解析成功
+    setTimeout(()=>{
+      highlightedCode(true)
+    },300)
+  })
+},{deep:true})
 </script>
 
 <template>
   <div style="padding: 12px">
-    <el-card v-for="(n,i) in chat" class="box-card" shadow="never">
-      <template #header>
-        <div class="card-header">
-          <span>{{ n.role==="user"?"我":"AI助手" }}</span>
-<!--          <el-button link type="warning" @click="chat.splice(i,1)">-->
-<!--            Remove-->
-<!--          </el-button>-->
-        </div>
-      </template>
-      <div class="dialog-msg" v-if="n.role == 'assistant'" v-html="markedParse(n.content)"></div>
-      <div class="dialog-msg" v-else>{{ n.content }}</div>
-    </el-card>
-    <el-card class="box-card mt" shadow="never">
-      <template #header>
-        <div class="card-header">
-          <span>提问</span>
-<!--          <el-button type="success" link>-->
-<!--            Prompts-->
-<!--          </el-button>-->
-        </div>
-      </template>
-      <div>
-        <el-input
-            v-model="question"
-            :rows="3"
-            type="textarea"
-            placeholder="提问"
-        />
+    <div v-if="app.dialog.length !==0">
+      <el-card v-for="(n,i) in chat.content" class="box-card" shadow="never" :key="i">
+        <template #header>
+          <div class="card-header">
+            <span>{{ n.role==="user"?"我":"AI助手" }}</span>
+            <!--          <el-button link type="warning" @click="chat.splice(i,1)">-->
+            <!--            Remove-->
+            <!--          </el-button>-->
+          </div>
+        </template>
+        <div class="dialog-msg" v-if="n.role == 'assistant'" v-html="markedParse(n.content)"></div>
+        <div class="dialog-msg" v-else>{{ n.content }}</div>
+      </el-card>
+      <el-card class="box-card mt" shadow="never">
+        <template #header>
+          <div class="card-header">
+            <span>提问</span>
+            <!--          <el-button type="success" link>-->
+            <!--            Prompts-->
+            <!--          </el-button>-->
+          </div>
+        </template>
+        <div>
+          <el-input
+              v-model="question"
+              :rows="3"
+              type="textarea"
+              placeholder="提问"
+          />
 
-      </div>
-      <div class="send-group">
-        <el-button type="warning" round :disabled="answering" @click="chat = []">重置</el-button>
-        <el-button type="success" round :loading="answering" :disabled="answering" @click="sendQuestion">发送
-        </el-button>
-      </div>
-    </el-card>
+        </div>
+        <div class="send-group">
+          <el-button type="warning" round :disabled="answering" @click="app.resetDialog(app.dialogIndex)">重置</el-button>
+          <el-button type="success" round :loading="answering" :disabled="answering" @click="sendQuestion">发送
+          </el-button>
+        </div>
+      </el-card>
+    </div>
+    <div v-else style="margin-top: 18%">
+      <el-empty description="暂无对话" />
+    </div>
   </div>
 </template>
 

@@ -50,7 +50,7 @@ func (u *User) Register() (err error) {
 	}
 	global.DB.Error = nil
 
-	if u.Username == "Admin" {
+	if u.Username == SuperAdministrator {
 		u.Status = StatusEnabled
 		u.IsAdmin = true
 	} else {
@@ -78,10 +78,10 @@ func (u *User) Login() error {
 	return nil
 }
 
-func (s *User) Destroy(id string) (err error) {
-	return global.DB.Where("id = ?", id).Delete(&s).Error
+func (u *User) Destroy(id string) (err error) {
+	return global.DB.Where("id = ?", id).Delete(&u).Error
 }
 
-func (s *User) UpdateField(id string, field string, fieldContent any) (err error) {
-	return global.DB.Model(&s).Where("id = ?", id).Update(field, fieldContent).Error
+func (u *User) UpdateField(id string, field string, fieldContent any) (err error) {
+	return global.DB.Model(&u).Where("id = ?", id).Update(field, fieldContent).Error
 }

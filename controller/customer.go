@@ -60,3 +60,22 @@ func CustomerUpdatePassword(c *gin.Context) {
 		"Msg":    "success",
 	})
 }
+
+func CustomerGetInfo(c *gin.Context) {
+	user, err := service.JwtGetUserByContext(c)
+
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"Status": false,
+			"Data":   "",
+			"Msg":    err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"Status": true,
+		"Data":   user,
+		"Msg":    "success",
+	})
+}

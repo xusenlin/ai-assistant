@@ -1,14 +1,15 @@
 <script setup>
 import {useAppStore} from "../stores/app.js";
-import {getUserToken, useUserStore} from "../stores/user.js";
-import { ElMessageBox,ElMessage } from "element-plus"
-import {baseURL} from "../config/req.js";
+import {useUserStore} from "../stores/user.js";
+import {ElMessageBox, ElMessage} from "element-plus"
+import { updatePwd } from "../api/user.js"
+import {MoreFilled, ChatDotRound, Avatar, Histogram,Edit, CircleCloseFilled} from "@element-plus/icons-vue"
 
 const app = useAppStore()
 const user = useUserStore()
 
 
-const editPwd = ()=>{
+const editPwd = () => {
   ElMessageBox.prompt('请输入新密码，必须大于等于6位', '提示', {
     confirmButtonText: '确认',
     cancelButtonText: '关闭',
@@ -17,22 +18,12 @@ const editPwd = ()=>{
       ElMessage.warning("输入的新密码少于6位")
       return
     }
-    fetch(baseURL + "/api/user/updatePwd", {
-      method: 'post',
-      headers: {'Content-Type': 'application/json','Authorization':getUserToken()},
-      body: JSON.stringify({password:value}),
-    }).then(r=>r.json()).then(response=>{
-      console.log(response)
-      if (!response.Status) {
-        ElMessage.warning(response.Msg)
-        return
-      }
+    updatePwd(value).then(()=>{
       ElMessage.success("修改成功，请重新登录")
-      setTimeout(()=>{
+      setTimeout(() => {
         user.loginOut()
-      },1000)
+      }, 1000)
     })
-
   }).catch(() => {})
 }
 
@@ -41,34 +32,57 @@ const editPwd = ()=>{
 <template>
   <div class="login-info">
     <template v-if="user.info">
-      <el-dropdown style="width: 100%">
-        <div class="item">
-          {{ user.userName }}
-          <div style="font-size: 12px">
-            剩余对话次数：{{user.remainingDialogueCount}}
-          </div>
+      <div class="dropdown-item">
+        <div>
+          <el-icon><Histogram /></el-icon>
+          总共消耗Token
         </div>
+        <div>{{ user.tokenConsumed }}</div>
+      </div>
+      <div class="dropdown-item">
+        <div>
+          <el-icon>
+            <ChatDotRound/>
+          </el-icon>
+          剩余对话次数
+        </div>
+        <div>{{ user.remainingDialogueCount }}</div>
+      </div>
+
+      <el-dropdown trigger="click" popper-class="dropdown" style="width: 100%">
+        <div class="dropdown-item">
+          <div>
+            <el-icon>
+              <Avatar/>
+            </el-icon>
+            {{ user.userName }}
+          </div>
+          <el-icon>
+            <MoreFilled/>
+          </el-icon>
+        </div>
+
         <template #dropdown>
-          <div style="padding: 20px;width: 240px">
-            <p>
-              用户名：{{ user.userName }}
-            </p>
-            <br>
-            <p>剩余对话次数：{{ user.remainingDialogueCount }}</p>
-            <br>
-            <div>
-              <el-button round style="width: 100%"  type="primary" @click="editPwd()">
+          <div class="dro">
+            <div class="dropdown-item" @click="editPwd()">
+              <div>
+                <el-icon>
+                  <Edit/>
+                </el-icon>
                 修改密码
-              </el-button>
+              </div>
+
             </div>
-            <br>
-            <div>
-              <el-button round style="width: 100%"  type="warning" @click="user.loginOut()">
+            <div class="dropdown-item" @click="user.loginOut()">
+              <div>
+                <el-icon>
+                  <CircleCloseFilled/>
+                </el-icon>
                 退出登录
-              </el-button>
+              </div>
+
             </div>
           </div>
-
         </template>
       </el-dropdown>
     </template>
@@ -78,19 +92,32 @@ const editPwd = ()=>{
   </div>
 </template>
 
-<style lang="scss" scoped>
-  .item{
+<style lang="scss">
+.dropdown {
+  background: #000 !important;
+  width: 250px;
+  border: none !important;
+
+  .dro {
     color: #fff;
-    cursor: pointer;
-    height: 44px;
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-radius: 4px;
-    padding: 0 8px;
-    &:hover{
-      background: #343541;
-    }
   }
+
+  .el-popper__arrow {
+    display: none;
+  }
+}
+@media only screen and (max-width: 720px) {
+  .dropdown{
+    width: 97%;
+  }
+}
+
+</style>
+<style lang="scss" scoped>
+
+.login-info {
+  width: 100%;
+}
+
 </style>

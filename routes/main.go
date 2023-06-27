@@ -69,6 +69,8 @@ func InitRouter() *gin.Engine {
 	api := r.Group("/api").Use(middlewares.CustomerAuth(true))
 	{
 		api.POST("/user/updatePwd", controller.CustomerUpdatePassword)
+		api.GET("/user/getUserInfo", controller.CustomerGetInfo)
+
 	}
 
 	return r

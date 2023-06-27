@@ -9,3 +9,30 @@ a {
 }
 
 
+.dropdown-item {
+  color: #fff;
+  cursor: pointer;
+  height: 44px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  justify-content: space-between;
+  border-radius: 4px;
+  padding: 0 16px;
+
+  &:hover,&.active {
+    background: #343541;
+  }
+
+  &:focus-visible {
+    outline: none !important;
+  }
+
+  .el-icon {
+    margin-right: 10px;
+    position: relative;
+    font-size: 14px;
+    top: 2px;
+  }
+}
