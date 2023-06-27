@@ -25,7 +25,7 @@ func DialogList(c *gin.Context) {
 	db := global.DBRecord.Model(&models.Dialog{}).Order("created_at desc")
 
 	if keyword != "" {
-		db.Where("name LIKE ?", "%"+keyword+"%")
+		db.Where("username LIKE ?", "%"+keyword+"%")
 	}
 
 	r, err := models.Paginate(db, pageNum, pageSize, &dialogs)
