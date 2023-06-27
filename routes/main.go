@@ -63,6 +63,9 @@ func InitRouter() *gin.Engine {
 		v1.GET("/sensitiveWords/destroy", controller.SensitiveWordsDestroy)
 		v1.GET("/sensitiveWords/add", controller.SensitiveWordsAdd)
 
+		//Record
+		v1.GET("/record/dialog/list", controller.DialogList)
+
 	}
 
 	r.POST("/api/openai/GPT3Dot5Turbo", middlewares.CustomerAuth(false), controller.GPT3Dot5Turbo)

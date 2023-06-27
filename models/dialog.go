@@ -12,3 +12,8 @@ type Dialog struct {
 	UserIP      string `gorm:"type:varchar(45);comment:IP"`
 	BrowserInfo string `gorm:"type:varchar(100);comment:浏览器信息"`
 }
+
+type DialogPaginate struct {
+	PageInfo
+	List []Dialog
+}
