@@ -47,8 +47,13 @@ const markedParse = (t) => {
 }
 const sendQuestion = async () => {
   question.value = question.value.trim()
+  let dialogId = app.dialog[app.dialogIndex].id;
+  if(app.dialog[app.dialogIndex].content.length >= 10){
+    app.deletedFirstTwoDialogues(dialogId)
+  }
+
   let dialog = app.dialog[app.dialogIndex]
-  let dialogId = dialog.id;
+
   if (question.value.length === 0) {
     ElNotification.warning({
       title: "提示",

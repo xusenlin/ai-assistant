@@ -64,6 +64,16 @@ export const useAppStore = defineStore("app", {
           return
         }
       }
+    },
+    deletedFirstTwoDialogues(id){
+      for (let i =0;i<this.dialog.length;i++){
+        let r = this.dialog[i]
+        if(r.id ===id){
+          this.dialog[i].content.splice(0,2)
+          storage.set(storageKeyDialog,this.dialog)
+          return
+        }
+      }
     }
   }
 })
