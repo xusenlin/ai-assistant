@@ -9,7 +9,7 @@ import (
 
 func InitRouter() *gin.Engine {
 	// 设置gin模式
-	gin.SetMode("debug")
+	gin.SetMode(gin.ReleaseMode)
 
 	r := gin.Default()
 
@@ -55,7 +55,7 @@ func InitRouter() *gin.Engine {
 		v1.GET("/openai/key/destroy", controller.OpenaiKeyDestroy)
 		v1.POST("/openai/key/add", controller.OpenaiKeyAdd)
 		v1.GET("/openai/key/ping", controller.OpenaiKeyPing)
-		//v1.GET("/openai/add", controller.OptionSet)
+		v1.GET("/openai/key/updateAmount", controller.UpdateAmount)
 
 		//SensitiveWords
 		v1.GET("/sensitiveWords/migrate", controller.SensitiveWordsMigrate)
@@ -68,12 +68,13 @@ func InitRouter() *gin.Engine {
 
 	}
 
+	r.POST("/api/user/login", controller.CustomerLogin)
+	r.POST("/api/user/active", controller.CustomerActive)
 	r.POST("/api/openai/GPT3Dot5Turbo", middlewares.CustomerAuth(false), controller.GPT3Dot5Turbo)
 	api := r.Group("/api").Use(middlewares.CustomerAuth(true))
 	{
 		api.POST("/user/updatePwd", controller.CustomerUpdatePassword)
 		api.GET("/user/getUserInfo", controller.CustomerGetInfo)
-
 	}
 
 	return r

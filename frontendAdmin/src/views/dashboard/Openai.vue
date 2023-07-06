@@ -2,7 +2,7 @@
 import {ref} from 'vue'
 import {getOptionByKey, setOptionByKey} from "@/api/option.ts"
 import {ElMessage, ElMessageBox} from "element-plus";
-import {getOpenaiKey,add,destroy,ping, OpenaiKey} from "@/api/openaiKey.ts";
+import {getOpenaiKey, add, destroy, ping, OpenaiKey, updateAmount} from "@/api/openaiKey.ts";
 
 const openaiUrl = ref("")
 const openaiSysPrompt = ref("")
@@ -31,8 +31,15 @@ const deleteRow = id => {
     initData()
   })
 }
-const testRow = key =>{
-  ping({key}).then(pong=>{
+const updateRow = id =>{
+  updateAmount({id}).then(()=>{
+    ElMessage.success("同步成功")
+    initData()
+  })
+}
+
+const testRow = id =>{
+  ping({id}).then(pong=>{
     ElMessage.success(pong)
     initData()
   })
@@ -128,6 +135,12 @@ const editPrompt = () => {
           <el-table :data="openaiKeys" style="width: 100%">
             <el-table-column width="50" prop="ID" label="ID"/>
             <el-table-column prop="Value" label="值"/>
+            <el-table-column prop="ExpireTime" label="过期时间"/>
+            <el-table-column prop="Value" label="使用/总额">
+              <template #default="s">
+                {{ s.row.UsedAmount.toFixed(2) }}/{{ s.row.TotalAmount.toFixed(2) }}
+              </template>
+            </el-table-column>
             <el-table-column prop="Status" label="状态">
               <template #default="s">
                 <div style="padding: 10px">
@@ -138,13 +151,16 @@ const editPrompt = () => {
               </template>
             </el-table-column>
             <el-table-column prop="ExceptionReason" label="异常信息"/>
-            <el-table-column prop="address" label="操作">
+            <el-table-column prop="address" label="操作" width="310">
               <template #default="s">
                 <el-button type="danger" @click.prevent="deleteRow(s.row.ID)">
                   删除
                 </el-button>
-                <el-button type="primary" @click.prevent="testRow(s.row.Value)">
-                  测试
+                <el-button type="primary" @click.prevent="testRow(s.row.ID)">
+                  Ping
+                </el-button>
+                <el-button type="success" @click.prevent="updateRow(s.row.ID)">
+                  同步使用情况
                 </el-button>
               </template>
             </el-table-column>

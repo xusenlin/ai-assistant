@@ -32,9 +32,17 @@ export function add(data:{Value:string}) {
         data,
     })
 }
-export function ping(params:{key:string}) {
+export function ping(params:{id:string}) {
     return r.request<string>({
         url: '/v1/openai/key/ping',
+        method: 'get',
+        params,
+    })
+}
+
+export function updateAmount(params:{id:string}) {
+    return r.request({
+        url: '/v1/openai/key/updateAmount',
         method: 'get',
         params,
     })

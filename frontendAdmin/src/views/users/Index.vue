@@ -11,9 +11,18 @@
     <el-table :data="tableData" style="width: 100%" max-height="calc(100vh - 267px)">
       <el-table-column prop="ID" label="ID"/>
       <el-table-column prop="Username" label="Username"/>
-      <el-table-column prop="IsAdmin" label="是否是管理员"/>
+      <el-table-column prop="IsAdmin" label="是否是管理员">
+        <template #default="s">
+          {{ s.row.IsAdmin ? "是":"否" }}
+        </template>
+      </el-table-column>
       <el-table-column prop="TokenConsumed" label="共消耗Token数"/>
       <el-table-column prop="RemainingDialogueCount" label="剩余对话次数"/>
+      <el-table-column prop="Password" label="是否已经激活">
+        <template #default="s">
+          {{ s.row.Password ? "是":"否" }}
+        </template>
+      </el-table-column>
       <el-table-column prop="CreatedAt" label="CreatedAt"/>
       <el-table-column fixed="right"  label="操作" width="460">
         <template #default="scope">

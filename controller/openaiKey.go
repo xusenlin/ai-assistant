@@ -85,19 +85,19 @@ func OpenaiKeyAdd(c *gin.Context) {
 }
 
 func OpenaiKeyPing(c *gin.Context) {
-	key := c.Query("key")
-	if key == "" {
+	id := c.Query("id")
+	if id == "" {
 		c.JSON(http.StatusOK, gin.H{
 			"Status": false,
 			"Data":   "",
-			"Msg":    "查询的key不能为空",
+			"Msg":    "查询的id不能为空",
 		})
 		return
 	}
 
 	var openaiKey models.OpenaiKey
 
-	if err := global.DB.Where("value = ?", key).First(&openaiKey).Error; err != nil {
+	if err := global.DB.First(&openaiKey, id).Error; err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"Status": false,
 			"Data":   "",
@@ -129,6 +129,44 @@ func OpenaiKeyPing(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"Status": true,
 		"Data":   test,
+		"Msg":    "success",
+	})
+
+}
+
+func UpdateAmount(c *gin.Context) {
+	id := c.Query("id")
+	if id == "" {
+		c.JSON(http.StatusOK, gin.H{
+			"Status": false,
+			"Data":   "",
+			"Msg":    "查询的id不能为空",
+		})
+		return
+	}
+
+	var openaiKey models.OpenaiKey
+
+	if err := global.DB.First(&openaiKey, id).Error; err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"Status": false,
+			"Data":   "",
+			"Msg":    err.Error(),
+		})
+		return
+	}
+
+	if err := openaiKey.UpdateAmount(); err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"Status": false,
+			"Data":   "",
+			"Msg":    err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"Status": true,
+		"Data":   "",
 		"Msg":    "success",
 	})
 

@@ -1,5 +1,6 @@
 package middlewares
 
+import "C"
 import (
 	"github.com/gin-gonic/gin"
 	"go-admin/models"
@@ -33,7 +34,7 @@ func AdminAuth() func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
 				"Status": false,
 				"Data":   "",
-				"Msg":    "You have been banned from logging in",
+				"Msg":    "你已经被管理员禁用了",
 			})
 			c.Abort()
 			return
@@ -43,7 +44,7 @@ func AdminAuth() func(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{
 				"Status": false,
 				"Data":   "",
-				"Msg":    "You are not an administrator, access is not allowed",
+				"Msg":    "你不是管理员，不允许操作",
 			})
 			c.Abort()
 			return

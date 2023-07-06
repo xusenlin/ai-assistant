@@ -27,7 +27,7 @@ type Claims struct {
 }
 
 type User struct {
-	gorm.Model
+	BaseModel
 	Username               string `gorm:"type:varchar(45);unique;comment:用户名" binding:"required,min=2,max=18"`
 	Password               string `gorm:"type:varchar(200)" binding:"required,min=6,max=16"`
 	Status                 int    `gorm:"default:0"`
@@ -84,4 +84,13 @@ func (u *User) Destroy(id string) (err error) {
 
 func (u *User) UpdateField(id string, field string, fieldContent any) (err error) {
 	return global.DB.Model(&u).Where("id = ?", id).Update(field, fieldContent).Error
+}
+
+func (u *User) CustomerExists() bool {
+	//password := helper.DigestString(PasswordSalt + u.Password)
+	err := global.DB.Where("username = ?", u.Username).First(&u).Error
+	if err != nil {
+		return false
+	}
+	return true
 }

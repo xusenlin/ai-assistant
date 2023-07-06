@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/golangunit/localtime"
 	"go-admin/global"
 	"gorm.io/gorm"
 )
@@ -9,6 +10,13 @@ const ( //用户状态
 	StatusDisabled = iota
 	StatusEnabled
 )
+
+type BaseModel struct {
+	ID        uint `gorm:"primarykey"`
+	CreatedAt *localtime.LocalTime
+	UpdatedAt *localtime.LocalTime
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+}
 
 type PageInfo struct {
 	PageIndex int // 当前页码

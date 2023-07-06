@@ -20,6 +20,7 @@ require (
 	github.com/go-playground/validator/v10 v10.14.1 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
+	github.com/golangunit/localtime v0.0.0-20191210042159-994d3a90a6d6 // indirect
 	github.com/importcjj/sensitive v0.0.0-20200106142752-42d1c505be7b // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
@@ -42,5 +43,6 @@ require (
 	golang.org/x/text v0.10.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
+	gorm.io/datatypes v1.2.0 // indirect
 	gorm.io/driver/sqlite v1.5.2 // indirect
 )

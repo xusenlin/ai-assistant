@@ -223,8 +223,8 @@ func UserUpdatePassword(c *gin.Context) {
 }
 
 type ReqUsers struct {
-	Username               string `binding:"required,min=2,max=1000"`
-	Password               string `binding:"required,min=6,max=16"`
+	Username               string `binding:"required,min=2"`
+	Password               string `binding:"omitempty,min=6,max=16"`
 	Status                 int
 	IsAdmin                bool
 	RemainingDialogueCount int
@@ -242,33 +242,40 @@ func UserBatchAdd(c *gin.Context) {
 		return
 	}
 
-	var users []models.User
-
 	req.Username = strings.ReplaceAll(req.Username, "，", ",")
 
 	usernames := strings.Split(req.Username, ",")
+	var password string
+	if req.Password != "" {
+		password = helper.DigestString(models.PasswordSalt + req.Password)
+	}
+
+	errorInfo := map[string]string{}
+	var successInfo []string
 
 	for _, u := range helper.RemoveDuplicate(usernames) {
-		users = append(users, models.User{
-			Username:               strings.Trim(u, " "),
-			Password:               helper.DigestString(models.PasswordSalt + req.Password),
+		name := strings.Trim(u, " ")
+		user := models.User{
+			Username:               name,
+			Password:               password,
 			Status:                 req.Status,
 			IsAdmin:                req.IsAdmin,
 			RemainingDialogueCount: req.RemainingDialogueCount,
-		})
+		}
+		if err := global.DB.Create(&user).Error; err != nil {
+			errorInfo[name] = err.Error()
+		} else {
+			successInfo = append(successInfo, name)
+		}
+
 	}
 
-	if err := global.DB.Create(&users).Error; err != nil {
-		c.JSON(http.StatusOK, gin.H{
-			"Status": false,
-			"Data":   "",
-			"Msg":    err.Error(),
-		})
-		return
-	}
 	c.JSON(http.StatusOK, gin.H{
 		"Status": true,
-		"Data":   len(users),
-		"Msg":    "成功添加",
+		"Data": map[string]any{
+			"success": successInfo,
+			"error":   errorInfo,
+		},
+		"Msg": "操作成功",
 	})
 }

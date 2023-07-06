@@ -18,7 +18,8 @@ func OpenaiNewClient() (*openai.Client, *models.OpenaiKey, error) {
 		return nil, nil, err
 	}
 	if len(optionKeys) == 0 {
-		return nil, nil, errors.New("已经没有可用的key,请联系管理员配置")
+		//已经没有可用的key,请联系管理员配置
+		return nil, nil, errors.New("AI小加睡着了～呼噜～")
 	}
 
 	var optionUrl models.Option
