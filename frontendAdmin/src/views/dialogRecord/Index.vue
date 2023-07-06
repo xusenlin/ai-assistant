@@ -10,7 +10,7 @@
     <el-table :data="tableData" style="width: 100%" max-height="calc(100vh - 267px)">
       <el-table-column prop="ID" width="80" label="ID"/>
       <el-table-column prop="Username" label="用户"/>
-      <el-table-column prop="Question" label="问题"/>
+      <el-table-column prop="Question" label="问题" show-overflow-tooltip/>
       <el-table-column prop="Response" label="回答" show-overflow-tooltip/>
       <el-table-column prop="UserIP" label="IP"/>
       <el-table-column prop="CreatedAt" label="CreatedAt"/>
