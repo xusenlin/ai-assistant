@@ -1,1 +1,0 @@
-import{_ as e,o as t,e as s,f as o}from"./index-aadf96f9.js";const c={},n={style:{width:"100%",height:"100vh",display:"flex","justify-content":"center","align-items":"center"}},_=o("h1",{style:{"font-size":"88px"}},"404",-1),i=[_];function r(a,d){return t(),s("div",n,i)}const h=e(c,[["render",r]]);export{h as default};
