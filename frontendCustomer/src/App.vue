@@ -3,11 +3,17 @@ import Login from "./components/Login.vue"
 import DialogList from "./components/DialogList.vue"
 import DialogContent from "./components/DialogContent.vue"
 import UserMenu from "./components/UserMenu.vue"
+import {ref} from "vue";
+const dialogContentRef = ref()
+
+const dialogNode = (id)=>{
+  dialogContentRef.value.Render(id)
+}
 </script>
 <template>
   <div class="app">
     <div class="slider">
-      <DialogList/>
+      <DialogList @dialogNode="dialogNode" />
       <div class="user">
         <UserMenu/>
       </div>
@@ -16,7 +22,7 @@ import UserMenu from "./components/UserMenu.vue"
       <div class="top">
         <UserMenu/>
       </div>
-      <DialogContent/>
+      <DialogContent ref="dialogContentRef"/>
     </div>
     <Login/>
   </div>

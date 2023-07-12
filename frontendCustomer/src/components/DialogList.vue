@@ -1,12 +1,46 @@
 <script setup>
-import {useAppStore} from "../stores/app.js";
 import { Comment,Plus,DeleteFilled } from "@element-plus/icons-vue"
+import storage from "good-storage";
+import {storageKeyDialog, storageKeyToken} from "../config/app.js";
+import {v4 as uuid} from "uuid";
+import {ref} from "vue";
+import {ElMessage} from "element-plus";
 
-const app = useAppStore()
+const emit = defineEmits(['dialogNode'])
+
+const storageDialog = storage.get(storageKeyDialog,[{title:"默认对话",id:uuid()}])
+
+const dialog = ref(storageDialog)
+const active = ref(0)
+
 
 const createDialog = ()=>{
-  app.addDialog()
+
+  dialog.value.push({
+    id:uuid(),
+    title:`新的对话`,
+  })
+  active.value = dialog.value.length-1
+  storage.set(storageKeyDialog,dialog.value)
 }
+
+const delDialog = index =>{
+  if(dialog.value.length===1){
+    ElMessage.warning("最少保留一个对话")
+    return
+  }
+
+  if(index <= active.value){
+    active.value--
+  }
+  dialog.value.splice(index,1)
+  storage.set(storageKeyDialog,dialog.value)
+}
+const clickNode = index =>{
+  active.value = index
+  emit('dialogNode',dialog.value[index].id)
+}
+
 </script>
 
 <template>
@@ -22,16 +56,16 @@ const createDialog = ()=>{
       <div
           class="dropdown-item"
           style="margin-bottom: 10px"
-          @click="app.dialogIndex=i"
-          :class="{active:i===app.dialogIndex}"
-          v-for="(item,i) in app.dialog" :key="item.id">
+          @click="clickNode(i)"
+          :class="{active:i=== active}"
+          v-for="(item,i) in dialog" :key="item.id">
         <div class="li-left">
           <el-icon><Comment /></el-icon>
           <div class="title">
             {{ item.title }}
           </div>
         </div>
-        <el-icon @click.stop="app.delDialog(i)"><DeleteFilled /></el-icon>
+        <el-icon @click.stop="delDialog(i)"><DeleteFilled /></el-icon>
       </div>
     </div>
 

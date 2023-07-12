@@ -3,7 +3,6 @@ import {ref,onMounted,watch,computed,nextTick} from 'vue'
 import {marked} from "marked"
 import {baseURL} from "../config/req.js"
 import { useUserStore } from "../stores/user.js"
-import { useAppStore } from "../stores/app.js"
 import { getUserToken } from "../stores/user.js"
 import hljs from "highlight.js/lib/core";
 import javascript from "highlight.js/lib/languages/javascript";
@@ -19,6 +18,7 @@ import swift from "highlight.js/lib/languages/swift";
 
 import "highlight.js/styles/github.css"
 import {ElNotification} from "element-plus"
+import storage from "good-storage";
 
 //为了减少文件大小，只注册会用到的语言，
 //也可以全部引入  import hljs from "highlight.js"; 不需要注册
@@ -37,22 +37,13 @@ hljs.registerLanguage("swift",swift)
 
 
 const user = useUserStore()
-const app = useAppStore()
-const chat = computed(() => app.dialog[app.dialogIndex]);
+const chats = ref([])
 const question = ref("")
 const answering = ref(false)
 
-const markedParse = (t) => {
-  return marked.parse(t)
-}
+
 const sendQuestion = async () => {
   question.value = question.value.trim()
-  let dialogId = app.dialog[app.dialogIndex].id;
-  if(app.dialog[app.dialogIndex].content.length >= 10){
-    app.deletedFirstTwoDialogues(dialogId)
-  }
-
-  let dialog = app.dialog[app.dialogIndex]
 
   if (question.value.length === 0) {
     ElNotification.warning({
@@ -62,11 +53,15 @@ const sendQuestion = async () => {
     return
   }
   answering.value = true
+
+  if(chats.value.length >= 20){
+    chats.value.splice(0,2)
+  }
   try {
     const response = await fetch(baseURL + "/api/openai/GPT3Dot5Turbo", {
       method: 'post',
       headers: {'Content-Type': 'application/json','Authorization':getUserToken()},
-      body: JSON.stringify([...dialog.content, {
+      body: JSON.stringify([...chats.value, {
         role: "user",
         content: question.value
       }]),
@@ -75,15 +70,15 @@ const sendQuestion = async () => {
       const msg = await response.text()
       throw new Error(msg)
     }
-    app.pushContent(dialogId,[{
+    chats.value.push({
       role: "user",
       content: question.value
     }, {
       role: "assistant",
       content: ""
-    }])
+    })
     question.value = ""
-
+    let chatsLen = chats.value.length
     const decoder = new TextDecoder('utf-8');
     const reader = response.body.getReader();
     while (true) {
@@ -92,7 +87,7 @@ const sendQuestion = async () => {
         highlightedCode()
         break
       }
-      app.pushSetAnswer(dialogId,decoder.decode(value))
+      chats.value[chatsLen-1].content += decoder.decode(value)
     }
     answering.value = false
     await user.updateUserInfoByApi()
@@ -105,7 +100,9 @@ const sendQuestion = async () => {
   }
 }
 
-
+const markedParse = (t) => {
+  return marked.parse(t)
+}
 const highlightedCode = (all=false) =>{
   let msg = document.querySelectorAll('.dialog-msg')
   let len = msg.length
@@ -119,22 +116,23 @@ const highlightedCode = (all=false) =>{
   })
 }
 
-onMounted(()=>{
-  highlightedCode(true)
-})
-watch(()=>app.dialogIndex,()=>{
-  nextTick(()=>{//更新成功并等待md解析成功
+
+const Render = id =>{
+  chats.value =  storage.get(id,[])
+  nextTick(()=>{
     setTimeout(()=>{
       highlightedCode(true)
     },300)
   })
-},{deep:true})
+}
+
+defineExpose({Render})
 </script>
 
 <template>
   <div style="padding: 12px">
-    <div v-if="app.dialog.length !==0">
-      <el-card v-for="(n,i) in chat.content" class="box-card" shadow="never" :key="i">
+    <div>
+      <el-card v-for="(n,i) in chats" class="box-card" shadow="never" :key="i">
         <template #header>
           <div class="card-header">
             <span>{{ n.role==="user"?"我":"AI助手" }}</span>
@@ -165,14 +163,11 @@ watch(()=>app.dialogIndex,()=>{
 
         </div>
         <div class="send-group">
-          <el-button type="warning" round :disabled="answering" @click="app.resetDialog(app.dialogIndex)">重置</el-button>
+          <el-button type="warning" round :disabled="answering" @click="chats.value = []">重置</el-button>
           <el-button type="success" round :loading="answering" :disabled="answering" @click="sendQuestion">发送
           </el-button>
         </div>
       </el-card>
-    </div>
-    <div v-else style="margin-top: 18%">
-      <el-empty description="暂无对话" />
     </div>
   </div>
 </template>

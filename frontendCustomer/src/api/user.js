@@ -3,6 +3,7 @@ import r from "../utils/request.js"
 
 export function getMineInfo()  {
   return r.request({
+    closeLoading:true,
     url: '/api/user/getUserInfo',
     method: 'get',
   })
