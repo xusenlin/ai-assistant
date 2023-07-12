@@ -152,9 +152,9 @@ defineExpose({Render})
         <template #header>
           <div class="card-header">
             <span>提问</span>
-            <!--          <el-button type="success" link>-->
-            <!--            Prompts-->
-            <!--          </el-button>-->
+                      <el-button type="success" link>
+                        Prompts
+                      </el-button>
           </div>
         </template>
         <div>
@@ -162,6 +162,7 @@ defineExpose({Render})
               v-model="question"
               :rows="3"
               type="textarea"
+              @keyup.enter="sendQuestion"
               placeholder="提问"
           />
 
