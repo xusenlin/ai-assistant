@@ -39,6 +39,7 @@ hljs.registerLanguage("swift",swift)
 const user = useUserStore()
 const chats = ref([])
 const question = ref("")
+const dialogId = ref("")
 const answering = ref(false)
 
 
@@ -85,6 +86,7 @@ const sendQuestion = async () => {
       const {value, done} = await reader.read();
       if (done) {
         highlightedCode()
+        storage.set(dialogId.value,chats.value)
         break
       }
       chats.value[chatsLen-1].content += decoder.decode(value)
@@ -118,6 +120,7 @@ const highlightedCode = (all=false) =>{
 
 
 const Render = id =>{
+  dialogId.value = id
   chats.value =  storage.get(id,[])
   nextTick(()=>{
     setTimeout(()=>{
@@ -131,14 +134,15 @@ defineExpose({Render})
 
 <template>
   <div style="padding: 12px">
+    <p>{{ dialogId }}</p>
     <div>
       <el-card v-for="(n,i) in chats" class="box-card" shadow="never" :key="i">
         <template #header>
           <div class="card-header">
             <span>{{ n.role==="user"?"我":"AI助手" }}</span>
-            <!--          <el-button link type="warning" @click="chat.splice(i,1)">-->
-            <!--            Remove-->
-            <!--          </el-button>-->
+            <el-button link type="warning" @click="chats.splice(i,1)">
+              Remove
+            </el-button>
           </div>
         </template>
         <div class="dialog-msg" v-if="n.role == 'assistant'" v-html="markedParse(n.content)"></div>
