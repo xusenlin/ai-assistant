@@ -2,8 +2,7 @@
 
 - Golang 环境
 - Node 环境
-## git仓库：
-http://gitlab.hulian120.cn:1980/jkhh50/ai-assistant.git
+
 
 ## 编译前端资源
 分别在frontendAdmin、frontendCustomer文件夹安装依赖和编译
@@ -36,21 +35,7 @@ go build ai-admin
 如果注册用户名为 `Admin`会自动成为管理员，并且是启用状态，否则都是未启用用户
 
 
+## 如果使用sqlite需要开启CGO才能运行编译
 
 go env -w CGO_ENABLED=1
 
-
-
-## 交叉编译
-在win 11 cmd或者powershell执行以下命令
-
-set GOARCH=amd64
-go env -w GOARCH=amd64
-set GOOS=linux
-go env -w GOOS=linux
-然后正常go build即可
-
-再切换回windows
-
-go env -w GOARCH=amd64
-go env -w GOOS=windows
