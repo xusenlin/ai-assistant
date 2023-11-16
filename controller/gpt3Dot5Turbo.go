@@ -79,7 +79,7 @@ RetryCount:
 		}
 		if strings.Contains(clientErr.Error(), "You can retry your request") {
 			// That model is currently overloaded with other requests. You can retry your request, or contact us through our help center at help.openai.com if the error persists.
-			c.String(http.StatusBadRequest, "AI小加正在全力解答大家的问题，请稍后再试一下吧～")
+			c.String(http.StatusBadRequest, "AI正在全力解答大家的问题，请稍后再试一下吧～")
 			return
 		}
 
