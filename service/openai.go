@@ -42,7 +42,16 @@ func OpenaiNewClient() (*openai.Client, *models.OpenaiKey, error) {
 }
 
 func OpenaiPing(c *gin.Context, key string) (string, error) {
-	client := openai.NewClient(key)
+	openaiUrl := OptionGetValue(models.OptionKeyOpenaiUrl)
+
+	if len(openaiUrl) == 0 || !strings.HasPrefix(openaiUrl, "http") {
+		return "", errors.New("请联系管理员配置正确的url")
+	}
+
+	config := openai.DefaultConfig(key)
+	config.BaseURL = openaiUrl
+
+	client := openai.NewClientWithConfig(config)
 	resp, err := client.CreateChatCompletion(
 		c,
 		openai.ChatCompletionRequest{
