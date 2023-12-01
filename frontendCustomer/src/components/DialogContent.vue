@@ -35,7 +35,7 @@ hljs.registerLanguage("rust",rust)
 hljs.registerLanguage("objectivec",objectivec)
 hljs.registerLanguage("swift",swift)
 
-
+const emit = defineEmits(['title'])
 
 const user = useUserStore()
 const chats = ref([])
@@ -73,6 +73,10 @@ const sendQuestion = async () => {
       const msg = await response.text()
       throw new Error(msg)
     }
+    if(chats.value.length === 0){
+      emit('title',question.value)
+    }
+
     chats.value.push({
       role: "user",
       content: question.value
@@ -80,6 +84,7 @@ const sendQuestion = async () => {
       role: "assistant",
       content: ""
     })
+
     question.value = ""
     let chatsLen = chats.value.length
     const decoder = new TextDecoder('utf-8');
@@ -167,9 +172,12 @@ defineExpose({Render})
 
         </div>
         <div class="send-group">
-          <el-button type="warning" round :disabled="answering" @click="chats.value = []">重置</el-button>
-          <el-button type="success" round :loading="answering" :disabled="answering" @click="sendQuestion">发送
-          </el-button>
+          <div></div>
+          <div>
+            <el-button type="warning" round :disabled="answering" @click="chats.value = []">重置</el-button>
+            <el-button type="success" round :loading="answering" :disabled="answering" @click="sendQuestion">发送
+            </el-button>
+          </div>
         </div>
       </el-card>
     </div>
@@ -203,7 +211,7 @@ defineExpose({Render})
 .send-group {
     margin-top: 20px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
 }
 
 pre {

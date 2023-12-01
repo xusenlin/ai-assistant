@@ -5,15 +5,19 @@ import DialogContent from "./components/DialogContent.vue"
 import UserMenu from "./components/UserMenu.vue"
 import {ref} from "vue";
 const dialogContentRef = ref()
+const dialogListRef = ref()
 
-const dialogNode = (id)=>{
+const dialogRender = (id)=>{
   dialogContentRef.value.Render(id)
+}
+const setTitle = (title)=>{
+  dialogListRef.value.SetTitle(title)
 }
 </script>
 <template>
   <div class="app">
     <div class="slider">
-      <DialogList @dialogNode="dialogNode" />
+      <DialogList ref="dialogListRef" @render="dialogRender" />
       <div class="user">
         <UserMenu/>
       </div>
@@ -22,7 +26,7 @@ const dialogNode = (id)=>{
       <div class="top">
         <UserMenu/>
       </div>
-      <DialogContent ref="dialogContentRef"/>
+      <DialogContent @title="setTitle" ref="dialogContentRef"/>
     </div>
     <Login/>
   </div>

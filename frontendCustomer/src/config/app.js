@@ -4,4 +4,4 @@ export const isProduction = envMode === "production"
 
 export const storageKeyUser = 'AI:USER'
 export const storageKeyToken = 'AI:TOKEN'
-export const storageKeyDialog = 'AI:DIALOG'
+export const storageKeyDialog = 'AI:DIALOG_V2'
