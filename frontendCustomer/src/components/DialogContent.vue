@@ -1,5 +1,5 @@
 <script setup>
-import {ref,onMounted,watch,computed,nextTick} from 'vue'
+import {ref,nextTick} from 'vue'
 import {marked} from "marked"
 import {baseURL} from "../config/req.js"
 import { useUserStore } from "../stores/user.js"
@@ -19,6 +19,7 @@ import swift from "highlight.js/lib/languages/swift";
 import "highlight.js/styles/github.css"
 import {ElNotification} from "element-plus"
 import storage from "good-storage";
+import promptsData from "./prompts.js"
 
 //为了减少文件大小，只注册会用到的语言，
 //也可以全部引入  import hljs from "highlight.js"; 不需要注册
@@ -41,7 +42,8 @@ const chats = ref([])
 const question = ref("")
 const dialogId = ref("")
 const answering = ref(false)
-
+const prompts = ref(promptsData)
+const promptsVisible = ref(false)
 
 const sendQuestion = async () => {
   question.value = question.value.trim()
@@ -134,7 +136,6 @@ defineExpose({Render})
 
 <template>
   <div style="padding: 12px">
-    <p>{{ dialogId }}</p>
     <div>
       <el-card v-for="(n,i) in chats" class="box-card" shadow="never" :key="i">
         <template #header>
@@ -145,25 +146,23 @@ defineExpose({Render})
             </el-button>
           </div>
         </template>
-        <div class="dialog-msg" v-if="n.role == 'assistant'" v-html="markedParse(n.content)"></div>
-        <div class="dialog-msg" v-else>{{ n.content }}</div>
+        <div class="dialog-msg"  v-html="markedParse(n.content)"></div>
       </el-card>
       <el-card class="box-card mt" shadow="never">
         <template #header>
           <div class="card-header">
             <span>提问</span>
-                      <el-button type="success" link>
-                        Prompts
-                      </el-button>
+            <el-button type="success" link  @click="promptsVisible = true">
+              Prompts
+            </el-button>
           </div>
         </template>
         <div>
           <el-input
               v-model="question"
-              :rows="3"
+              :rows="5"
               type="textarea"
-              @keyup.enter="sendQuestion"
-              placeholder="提问"
+              placeholder="使用符号```将你的代码包裹起来，Ai能更好的识别代码。"
           />
 
         </div>
@@ -174,6 +173,24 @@ defineExpose({Render})
         </div>
       </el-card>
     </div>
+    <el-dialog width="80%" v-model="promptsVisible" title="Prompts">
+      <el-collapse model-value="">
+        <el-collapse-item v-for="n in prompts" :title="n.act">
+          <div>
+            {{n.prompt}}
+          </div>
+          <div style="display: flex;justify-content: flex-end">
+            <el-button round size="small" type="success" :disabled="answering"  @click="question=n.prompt;promptsVisible=false">使用这个 prompt.</el-button>
+          </div>
+        </el-collapse-item>
+      </el-collapse>
+    </el-dialog>
+    <el-footer >
+      <div style="width: 100%;text-align: center;color: #aa0000;font-size: 12px">
+        本项目是一个实验性项目，可能存在不足和错误，仅供学术研究和讨论目的使用，不以任何形式获利，也不得用于任何商业用途，请谨慎使用。
+        <div style="color: #999;margin-top: 10px">如果您有任何问题，可以发送邮件到 wumulaozu@gmail.com 或到我的博客 xusenlin.top 进行留言，我会尽快回复您。  😄</div>
+      </div>
+    </el-footer>
   </div>
 </template>
 
